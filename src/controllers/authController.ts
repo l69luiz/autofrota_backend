@@ -66,12 +66,18 @@ const obterPermissoesPorGrupo = (grupo: string) => {
   const permissoes: {
     admin: string[];
     visitante: string[];
-    Colaborador: string[];
+    colaborador: string[];
+    proprietario: string[];
+    userCliente: string[];
+    empresa: string[];
     
   } = {
     admin: ['create', 'read', 'update', 'delete'],
     visitante: ['read'],
-    Colaborador: ['read', 'create', 'update'], 
+    colaborador: ['read', 'create', 'update'], 
+    proprietario: ['create', 'read', 'update', 'delete'], 
+    userCliente: ['read', 'update'], 
+    empresa: ['read', 'update'], 
     
   };
   

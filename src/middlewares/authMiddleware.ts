@@ -1,42 +1,3 @@
-// // src/middlewares/authMiddleware.ts
-
-// import { Request, Response, NextFunction } from 'express';
-// import jwt from 'jsonwebtoken';
-
-// interface JwtPayload {
-//   id: number;
-// }
-
-// // Estendendo a tipagem do Request diretamente no arquivo
-// interface CustomRequest extends Request {
-//   user?: {
-//     id: number;
-//   };
-// }
-
-// const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
-//   const token = req.header('Authorization')?.replace('Bearer ', '');
-
-//   if (!token) {
-//     // Em vez de retornar a resposta, só chamamos `res` para enviar a resposta.
-//     res.status(401).json({ message: 'Acesso negado!' });
-//     return; // Impede a execução de código posterior
-//   }
-
-//   try {
-//     // Verificando e decodificando o token
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-//     req.user = { id: decoded.id }; // Adicionando a propriedade "user" no Request
-//     next(); // Prosseguindo com o próximo middleware ou handler
-//   } catch (error) {
-//     res.status(400).json({ message: 'Token inválido!' });
-//     return; // Impede a execução de código posterior
-//   }
-// };
-
-// //export default authMiddleware;
-// export { authMiddleware };
-
 // src/middlewares/authMiddleware.ts
 
 import { Request, Response, NextFunction } from 'express';
@@ -74,7 +35,10 @@ const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction): 
       id: decoded.id,
       grupo: decoded.grupo,
       permissoes: decoded.permissoes, // Armazenando as permissões no Request
+      
     };
+    
+    
     next(); // Prosseguindo com o próximo middleware ou handler
   } catch (error) {
     res.status(400).json({ message: 'Token inválido!' });
@@ -84,16 +48,38 @@ const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction): 
 
 // Middleware para verificar permissões antes de permitir o acesso a uma rota
 const checkPermission = (permissaoNecessaria: string) => {
+
   return (req: CustomRequest, res: Response, next: NextFunction): void => {
     const usuario = req.user;
-
+    
+    
     if (!usuario) {
-       res.status(401).json({ message: 'Usuário não autenticado!' });
-       return;
+      res.status(401).json({ message: 'Usuário não autenticado!' });
+      return;
+    }
+
+    // Aqui ajustamos para garantir que a estrutura das permissões seja definida corretamente
+    if (!usuario.permissoes || !Array.isArray(usuario.permissoes)) {
+      res.status(403).json({ message: 'Acesso negado. Permissão insuficiente.' });
+      return;
     }
 
     // Verifica se o usuário tem a permissão necessária
     if (usuario.permissoes.includes(permissaoNecessaria)) {
+      
+      
+      // Se o grupo for 'visitante' ou 'userCliente', permitir apenas operações no próprio ID
+      if ((usuario.grupo === 'visitante' || usuario.grupo === 'userCliente') && req.params.idUsuario) {
+        const idUsuario = parseInt(req.params.idUsuario, 10);
+        
+        // Verifica se o idUsuario da requisição é igual ao id do usuário autenticado
+        if (usuario.id !== idUsuario) {
+          res.status(403).json({ message: 'Acesso negado. Você só pode acessar seus próprios dados.' });
+          return;
+        }
+      }
+
+      // Se o grupo tem a permissão necessária ou o id é válido, prosseguir
       next(); // Permissão concedida, passa para o próximo middleware ou rota
     } else {
       res.status(403).json({ message: 'Acesso negado. Permissão insuficiente.' });
