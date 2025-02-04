@@ -35,15 +35,15 @@ Veiculo.init(
       autoIncrement: true,
     },
     Placa_Veiculo: {
-      type: DataTypes.STRING(7),
+      type: DataTypes.STRING(9),
       allowNull: true,
     },
     Chassi: {
-      type: DataTypes.STRING(12),
+      type: DataTypes.STRING(20),
       allowNull: true,
     },
     Renavan: {
-      type: DataTypes.STRING(12),
+      type: DataTypes.STRING(20),
       allowNull: true,
     },
     Cor: {
@@ -59,7 +59,7 @@ Veiculo.init(
       allowNull: true,
     },
     Modelo: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(60),
       allowNull: true,
     },
     Ano_fab: {
@@ -83,7 +83,7 @@ Veiculo.init(
       allowNull: true,
     },
     Km_inicial: {
-      type: DataTypes.STRING(6),
+      type: DataTypes.STRING(9),
       allowNull: true,
     },
     Ar_cond: {
@@ -119,6 +119,6 @@ Veiculo.init(
     sequelize,
     modelName: "Veiculo",
     tableName: "Veiculo",
-    timestamps: false,
+    timestamps: true,
   }
 );
