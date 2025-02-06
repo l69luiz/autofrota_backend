@@ -1,11 +1,11 @@
-// src/models/usuarios.ts
+// src/models/clientes.ts
 
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 import { Loja } from "./lojas"; // Import do model Loja
 
-export class Usuario extends Model {
-  public idUsuario!: number;
+export class Cliente extends Model {
+  public idCliente!: number;
   public Nome!: string;
   public CPF_CNPJ!: string;
   public Rua!: string | null;
@@ -15,22 +15,18 @@ export class Usuario extends Model {
   public Celular!: string | null;
   public Celular2!: string | null;
   public RG!: string | null;
-  public Tipo!: string | null;
-  public Cargo!: string | null;
-  public Salario!: number | null;
-  public Data_Admissao!: Date | null;
+  public Tipo_Cliente!: "Pessoa Física" | "Pessoa Jurídica" | null;
   public Email!: string;
-  public Senha!: string;
   public Grupo!: string | null;
-  public createdAt!: Date;
-  public updateAt!: Date;
-  public Data_Demissao!: Date | null;
+  public Data_Nascimento!: Date | null;
+  public Sexo!: "Masculino" | "Feminino" | "Outro" | null;
+  public Estado_Civil!: "Solteiro" | "Casado" | "Divorciado" | "Viúvo" | null;
   public Lojas_idLoja!: number;
 }
 
-Usuario.init(
+Cliente.init(
   {
-    idUsuario: {
+    idCliente: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -72,20 +68,8 @@ Usuario.init(
       type: DataTypes.STRING(20),
       allowNull: true,
     },
-    Tipo: {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-    },
-    Cargo: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-    },
-    Salario: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-    },
-    Data_Admissao: {
-      type: DataTypes.DATE,
+    Tipo_Cliente: {
+      type: DataTypes.ENUM("Pessoa Física", "Pessoa Jurídica"),
       allowNull: true,
     },
     Email: {
@@ -93,12 +77,20 @@ Usuario.init(
       allowNull: false,
       unique: true,
     },
-    Senha: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
     Grupo: {
       type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    Data_Nascimento: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    Sexo: {
+      type: DataTypes.ENUM("Masculino", "Feminino", "Outro"),
+      allowNull: true,
+    },
+    Estado_Civil: {
+      type: DataTypes.ENUM("Solteiro", "Casado", "Divorciado", "Viúvo"),
       allowNull: true,
     },
     createdAt: {
@@ -111,10 +103,6 @@ Usuario.init(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
-    Data_Demissao: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
     Lojas_idLoja: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -126,15 +114,14 @@ Usuario.init(
   },
   {
     sequelize,
-    modelName: "Usuario",
-    tableName: "Usuarios",
+    modelName: "Cliente",
+    tableName: "Clientes",
     timestamps: true,
   }
 );
 
-// Relacionamento com Lojas (Um usuário pertence a uma loja)
-Usuario.belongsTo(Loja, {
+// Relacionamento com Lojas (Um cliente pertence a uma loja)
+Cliente.belongsTo(Loja, {
   foreignKey: "Lojas_idLoja",
   as: "loja",
 });
-

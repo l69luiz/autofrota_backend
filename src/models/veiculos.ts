@@ -1,30 +1,34 @@
 // src/models/veiculos.ts
 
 import { DataTypes, Model } from "sequelize";
-import { sequelize } from "../config/database"; // Certifique-se de ajustar o caminho de acordo com sua configuração
+import { sequelize } from "../config/database";
+//import { Estoque } from "./estoques"; // Import do model Estoque
 
 export class Veiculo extends Model {
   public idVeiculo!: number;
-  public Placa_Veiculo!: string;
-  public Chassi!: string;
-  public Renavan!: string;
-  public Cor!: string;
-  public Nr_Motor!: string;
-  public Marca!: string;
-  public Modelo!: string;
-  public Ano_fab!: number;
-  public Ano_mod!: number;
-  public Nr_portas!: number;
-  public CPF_CNPJ_Prop!: string;
-  public Pot_Motor!: string;
-  public Km_inicial!: string;
-  public Ar_cond!: boolean;
-  public Vidro_elet!: boolean;
-  public Multimidia!: boolean;
-  public Sensor_Re!: boolean;
-  public Vr_PadraoAluguel!: string;
-  public Trava_Elet!: boolean;
-  public Alarme!: boolean;
+  public Placa_Veiculo!: string | null;
+  public Chassi!: string | null;
+  public Renavan!: string | null;
+  public Cor!: string | null;
+  public Nr_Motor!: string | null;
+  public Marca!: string | null;
+  public Modelo!: string | null;
+  public Ano_fab!: number | null;
+  public Ano_mod!: number | null;
+  public Nr_portas!: number | null;
+  public CPF_CNPJ_Prop!: string | null;
+  public Pot_Motor!: string | null;
+  public Km_inicial!: string | null;
+  public Ar_cond!: boolean | null;
+  public Vidro_elet!: boolean | null;
+  public Multimidia!: boolean | null;
+  public Sensor_Re!: boolean | null;
+  public Vr_PadraoAluguel!: string | null;
+  public Trava_Elet!: boolean | null;
+  public Alarme!: boolean | null;
+  public Valor_Entrada!: number | null;
+  public Valor_Fipe_Entrada!: number | null;
+  public Estoque_idEstoque!: number;
 }
 
 Veiculo.init(
@@ -43,7 +47,7 @@ Veiculo.init(
       allowNull: true,
     },
     Renavan: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(12),
       allowNull: true,
     },
     Cor: {
@@ -114,6 +118,22 @@ Veiculo.init(
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    Valor_Entrada: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
+    Valor_Fipe_Entrada: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
+    Estoque_idEstoque: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      // references: {
+      //   model: Estoque, // Relacionamento com a tabela Estoque
+      //   key: "idEstoque",
+      // },
+    },
   },
   {
     sequelize,
@@ -122,3 +142,10 @@ Veiculo.init(
     timestamps: true,
   }
 );
+
+// Relacionamento com Estoque (Um veículo pertence a um estoque)
+// Veiculo.belongsTo(Estoque, {
+//   foreignKey: "Estoque_idEstoque",
+//   as: "estoque",
+// });
+
