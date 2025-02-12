@@ -33,7 +33,7 @@ const createDatabaseIfNotExists = async () => {
 
  
     // Sincroniza todos os modelos
-    await sequelize.sync({ force: false }); // ou alter: true, conforme o necessário
+    //await sequelize.sync({ force: false }); // ou alter: true, conforme o necessário
 
     console.log(`Modelos sincronizados com o banco de dados "${databaseName}".`);
   } catch (error) {
@@ -45,27 +45,6 @@ const createDatabaseIfNotExists = async () => {
 //createDatabaseIfNotExists();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Testa a conexão com o banco de dados
 sequelize
   .authenticate()
@@ -75,10 +54,6 @@ sequelize
   .catch((err) => {
     console.error("Erro ao conectar ao banco:", err);
   });
-
-
-
-
 
 
 
