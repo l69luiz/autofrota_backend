@@ -1,16 +1,14 @@
-// src/models/pagamentos.ts
+//src/models/pagamentos.ts
 
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from "../config/database";
-import { Loja } from './lojas'; // model da tabela Lojas
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/database';
+import { Loja } from './lojas';
 
 export class Pagamento extends Model {
   public idPagamento!: number;
   public Dt_Pagto!: Date | null;
   public Vr_Pagto!: number | null;
-  public Forma_Pagto!: string | null;
-  public createdAt!: Date;
-  public updatedAt!: Date;
+  public FormaPagto!: string | null;
   public Lojas_idLoja!: number;
   public ContaDebitada!: number | null;
 }
@@ -30,17 +28,9 @@ Pagamento.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
-    Forma_Pagto: {
+    FormaPagto: {
       type: DataTypes.STRING(45),
       allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
     },
     Lojas_idLoja: {
       type: DataTypes.INTEGER,
@@ -59,14 +49,16 @@ Pagamento.init(
     sequelize,
     modelName: 'Pagamento',
     tableName: 'Pagamentos',
+    timestamps: true,
   }
 );
 
-// Relacionamento com Lojas
-Pagamento.belongsTo(Loja, { 
-  foreignKey: 'Lojas_idLoja',
-  as: "loja",
-});
-
-
-
+// Relacionamento com a tabela Lojas usando alias
+Pagamento.belongsTo(Loja,
+   { foreignKey: 'Lojas_idLoja',
+     as: 'loja' 
+   });
+Loja.hasMany(Pagamento,
+   { foreignKey: 'Lojas_idLoja', 
+    as: 'pagamento' 
+   });
