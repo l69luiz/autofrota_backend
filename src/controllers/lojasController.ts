@@ -25,7 +25,7 @@ export const createLoja = [
   checkPermission('Loja', 'criar'), // Verifica permissão de criação
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const { Nome_Loja, Endereco_Loja, Telefone_Loja, Email_Loja, CNPJ_Loja } = req.body;
+      const { Nome_Loja, NomeFantasia_Loja, Endereco_Loja, Telefone_Loja, Email_Loja, CNPJ_Loja } = req.body;
 
       // Verificar se o CNPJ já está em uso
       const cnpjExistente = await Loja.findOne({ where: { CNPJ_Loja } });
@@ -37,6 +37,7 @@ export const createLoja = [
       // Criar a nova loja
       const loja = await Loja.create({
         Nome_Loja,
+        NomeFantasia_Loja,
         Endereco_Loja,
         Telefone_Loja,
         Email_Loja,
@@ -77,7 +78,7 @@ export const updateLoja = [
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { idLoja } = req.params;
-      const { Nome_Loja, Endereco_Loja, Telefone_Loja, Email_Loja, CNPJ_Loja } = req.body;
+      const { Nome_Loja, NomeFantasia_Loja, Endereco_Loja, Telefone_Loja, Email_Loja, CNPJ_Loja } = req.body;
 
       const loja = await Loja.findOne({ where: { idLoja } });
       if (!loja) {
@@ -86,6 +87,7 @@ export const updateLoja = [
       }
 
       loja.Nome_Loja = Nome_Loja || loja.Nome_Loja;
+      loja.NomeFantasia_Loja = Nome_Loja || loja.NomeFantasia_Loja;
       loja.Endereco_Loja = Endereco_Loja || loja.Endereco_Loja;
       loja.Telefone_Loja = Telefone_Loja || loja.Telefone_Loja;
       loja.Email_Loja = Email_Loja || loja.Email_Loja;

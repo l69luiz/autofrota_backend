@@ -59,8 +59,8 @@ sequelize
 
 
 // Opcional: Sincronizar o banco de dados (dependendo da sua necessidade)
-// sequelize.sync({ alter: true }).then(() => {
-//   console.log("Tabelas sincronizadas!");
+//  sequelize.sync({ alter: true }).then(() => {
+//    console.log("Tabelas sincronizadas!!!");
 // });
 
 

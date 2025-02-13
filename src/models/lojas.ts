@@ -6,6 +6,7 @@ import { sequelize } from "../config/database";
 export class Loja extends Model {
   public idLoja!: number;
   public Nome_Loja!: string;
+  public NomeFantasia_Loja!: string;
   public Endereco_Loja!: string;
   public Telefone_Loja!: string | null;
   public Email_Loja!: string | null;
@@ -22,6 +23,10 @@ Loja.init(
     },
     Nome_Loja: {
       type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    NomeFantasia_Loja: {
+      type: DataTypes.STRING(120),
       allowNull: false,
     },
     Endereco_Loja: {

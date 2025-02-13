@@ -26,11 +26,6 @@ interface ManutencaoComRelacionamentos extends Manutencao {
   };
 }
 
-
-
-
-
-
 // Função para buscar todas as manutenções da loja do usuário
 export const getManutencoes = [
   checkPermission('Manutencao', 'ler'), // Verifica permissão de leitura
