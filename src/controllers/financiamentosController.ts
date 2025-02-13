@@ -1,4 +1,4 @@
-// src/controllers/financiamentosController.ts
+//src/controllers/financiamentosController.ts
 import { Request, Response } from 'express';
 import { Financiamento } from '../models/financiamentos'; // Modelo de Financiamento
 import { Cliente } from '../models/clientes';

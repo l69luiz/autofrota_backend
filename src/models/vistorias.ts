@@ -1,4 +1,4 @@
-// src/models/vistorias.ts
+//src/models/vistorias.ts
 
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";

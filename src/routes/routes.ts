@@ -6,12 +6,12 @@ import {
   createUsuario, 
   updateUsuario, 
   deleteUsuario, 
-  getUsuarioByCpfCnpj, 
-  getUsuarioByEmail, 
+  //getUsuarioByCpfCnpj, 
+  //getUsuarioByEmail, 
   getUsuarioById,
-  getUsuariosByLoja,
-  getUsuariosMyLoja 
-} from '../controllers/userController';
+  //getUsuariosByLoja,
+  //getUsuariosMyLoja 
+} from '../controllers/usuariosController';
 
 import { 
   getLojas, 
@@ -116,13 +116,13 @@ const router = express.Router();
 router.post('/login', login);
 
 // Rotas de usuários
-router.get('/usuarios', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosMyLoja); // Lista todos usuário de todas as lojas
+//router.get('/usuarios', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosMyLoja); // Lista todos usuário de todas as lojas
 router.get('/usuarios/todos', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarios); // Lista todos usuário de todas as lojas
 router.post('/usuarios', authMiddleware, checkPermission('Usuarios', 'criar'), createUsuario); // Verificando permissão 'criar' para a tabela 'Usuarios'
-router.get('/usuarios/cpfcnpj/:CPF_CNPJ', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioByCpfCnpj); // Verificando permissão 'ler' para a tabela 'Usuarios'
-router.get('/usuarios/email/:Email', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioByEmail); // Verificando permissão 'ler' para a tabela 'Usuarios'
+//router.get('/usuarios/cpfcnpj/:CPF_CNPJ', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioByCpfCnpj); // Verificando permissão 'ler' para a tabela 'Usuarios'
+//router.get('/usuarios/email/:Email', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioByEmail); // Verificando permissão 'ler' para a tabela 'Usuarios'
 router.get('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioById); // Verificando permissão 'ler' para a tabela 'Usuarios'
-router.get('/usuarios/loja/:Lojas_idLoja', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosByLoja); // Verificando permissão 'ler' para a tabela 'Usuarios'
+//router.get('/usuarios/loja/:Lojas_idLoja', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosByLoja); // Verificando permissão 'ler' para a tabela 'Usuarios'
 router.put('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', 'atualizar'), updateUsuario); // Verificando permissão 'atualizar' para a tabela 'Usuarios'
 router.delete('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', 'deletar'), deleteUsuario); // Verificando permissão 'deletar' para a tabela 'Usuarios'
 

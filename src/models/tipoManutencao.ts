@@ -1,4 +1,4 @@
-// src/models/tipoManutencao.ts
+//src/models/tipoManutencao.ts
 
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";

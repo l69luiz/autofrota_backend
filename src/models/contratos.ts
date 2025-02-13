@@ -1,4 +1,4 @@
-// src/models/contratos.ts
+//src/models/contratos.ts
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../config/database';
 import { Usuario } from './usuarios';

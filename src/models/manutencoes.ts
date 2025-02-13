@@ -78,7 +78,7 @@ Manutencao.init(
   {
     sequelize,
     modelName: "Manutencao",
-    tableName: "Manutencao",
+    tableName: "Manutencoes",
     timestamps: true,
   }
 );

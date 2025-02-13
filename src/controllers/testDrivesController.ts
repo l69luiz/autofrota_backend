@@ -105,7 +105,6 @@ export const updateTestDrive = [
 
       testDrive.Data_TestDrive = Data_TestDrive || testDrive.Data_TestDrive;
       testDrive.Clientes_idCliente = Clientes_idCliente || testDrive.Clientes_idCliente;
-      testDrive.Usuarios_idUsuarios = Usuarios_idUsuarios || testDrive.Usuarios_idUsuarios;
       testDrive.Usuarios_idUsuario = Usuarios_idUsuario || testDrive.Usuarios_idUsuario;
 
       await testDrive.save();
