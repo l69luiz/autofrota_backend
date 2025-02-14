@@ -18,6 +18,8 @@ export class Cliente extends Model {
   public Tipo_Cliente!: "Pessoa Física" | "Pessoa Jurídica" | null;
   public Email!: string;
   public Grupo!: string | null;
+  public StatusAutoRastrear!: string | null;
+  public StatusLoja!: string | null;
   public Data_Nascimento!: Date | null;
   public Sexo!: "Masculino" | "Feminino" | "Outro" | null;
   public Estado_Civil!: "Solteiro" | "Casado" | "Divorciado" | "Viúvo" | null;
@@ -78,6 +80,14 @@ Cliente.init(
       unique: true,
     },
     Grupo: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    StatusAutoRastrear: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    StatusLoja: {
       type: DataTypes.STRING(50),
       allowNull: true,
     },

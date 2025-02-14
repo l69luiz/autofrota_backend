@@ -3,6 +3,9 @@ import { Request, Response } from 'express';
 import { Financiamento } from '../models/financiamentos'; // Modelo de Financiamento
 import { Cliente } from '../models/clientes';
 import { Loja } from '../models/lojas';
+import { QueryTypes } from 'sequelize';
+import { sequelize } from '../config/database';
+import { GET_FINANCIAMENTOS_BY_LOJA } from '../consultasSQL/consultasFinanciamentos';
 
 
 interface CustomRequest extends Request {
@@ -20,36 +23,27 @@ export const getFinanciamentos = [
     try {
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
 
-      // Busca financiamentos filtrando pela loja do cliente associado
-      const financiamentos = await Financiamento.findAll({
-        include: [
-          {
-            model: Cliente,
-            as: 'cliente', // Alias usado no relacionamento
-            include: [
-              {
-                model: Loja,
-                as: 'loja', // Alias usado no relacionamento
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
-              },
-            ],
-          },
-        ],
-      });
+      // Executa a query SQL diretamente
+      const financiamentos = await sequelize.query(GET_FINANCIAMENTOS_BY_LOJA,
+        {
+          replacements: { idLoja: idLoja }, // Substitui o parâmetro pelo idLoja do usuário
+          type: QueryTypes.SELECT // Define o tipo de query
+        }
+      );
 
-      // Filtra financiamentos cujo array de cliente não seja null
-      const financiamentosFiltrados = financiamentos.filter((financiamento: any) => financiamento.cliente !== null);
-
-      if (financiamentosFiltrados.length === 0) {
+      // Verifica se encontrou algum financiamento
+      if (financiamentos.length === 0) {
         res.status(404).json({ message: 'Não há financiamentos cadastrados na sua loja.' });
       } else {
-        res.json(financiamentosFiltrados);
+        res.json(financiamentos);
       }
     } catch (error) {
+      console.error('Erro ao buscar financiamentos:', error);
       res.status(500).json({ message: 'Erro ao buscar financiamentos' });
     }
   },
 ];
+
 
 
 // Função para criar um novo financiamento
