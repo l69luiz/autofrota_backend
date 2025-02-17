@@ -1,6 +1,7 @@
 // src/controllers/clientesController.ts
 import { Request, Response } from 'express';
 import { Cliente } from '../models/clientes'; // Modelo de Cliente
+import { Op } from 'sequelize';
 //import { checkPermission } from '../middlewares/authMiddleware'; // Importando o middleware de permissões
 
 interface CustomRequest extends Request {
@@ -30,6 +31,57 @@ export const getClientes = [
     }
   },
 ];
+
+// Função para buscar todos os clientes da loja com filtros
+export const getClientesFilter = async (req: CustomRequest, res: Response): Promise<void> => {
+  try {
+    // Pega o ID da loja do usuário autenticado
+    const idLoja = req.user?.idlojaToken;
+
+    // Pega os parâmetros da URL (para filtros e paginação)
+    const { _page = 1, _limit = 10, nome_like } = req.query;
+
+    // Converte _page e _limit para inteiros e calcula o offset para a paginação
+    const page = parseInt(_page as string, 10);
+    const limit = parseInt(_limit as string, 10);
+    const offset = (page - 1) * limit;
+
+    // Constrói a condição de filtro para o nome completo, se fornecido
+    const whereCondition = {
+      Lojas_idLoja: idLoja, // Filtro pela loja do usuário logado
+      ...(nome_like && {
+        Nome: {
+          [Op.like]: `%${nome_like}%`,
+        },
+      }),
+    };
+
+    // Faz a consulta ao banco de dados com paginação e filtro
+    const clientes = await Cliente.findAndCountAll({
+      where: whereCondition,
+      limit: limit,
+      offset: offset,
+    });
+
+    // Verifica se há clientes e envia a resposta apropriada
+    if (clientes.rows.length === 0) {
+      res.status(404).json({ message: 'Não há clientes cadastrados na sua loja.' });
+    } else {
+      // Envia a lista de clientes com a contagem total, paginação e dados
+      res.status(200).json({
+        data: clientes.rows,
+        total: clientes.count,
+        page,
+        limit,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar clientes' });
+    console.log(error);
+  }
+};
+
+
 
 // Função para criar um novo cliente na loja do usuário
 export const createCliente = [
