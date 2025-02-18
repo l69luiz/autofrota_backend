@@ -39,13 +39,14 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
     const idLoja = req.user?.idlojaToken;
 
     // Pega os parâmetros da URL (para filtros e paginação)
-    const { _page = 1, _limit = 10, nome_like } = req.query;
+    const { _page, _limit, nome_like } = req.query;
+    //const { nome_like } = req.query;
 
-    // Converte _page e _limit para inteiros e calcula o offset para a paginação
-    const page = parseInt(_page as string, 10);
-    const limit = parseInt(_limit as string, 10);
+    // Converte _page e _limit para inteiros e define valores padrão caso sejam inválidos
+    const page = !isNaN(parseInt(_page as string)) ? parseInt(_page as string, 10) : 1;
+    const limit = !isNaN(parseInt(_limit as string)) ? parseInt(_limit as string, 10) : 10;
     const offset = (page - 1) * limit;
-
+    
     // Constrói a condição de filtro para o nome completo, se fornecido
     const whereCondition = {
       Lojas_idLoja: idLoja, // Filtro pela loja do usuário logado
@@ -70,7 +71,7 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
       // Envia a lista de clientes com a contagem total, paginação e dados
       res.status(200).json({
         data: clientes.rows,
-        total: clientes.count,
+        totalCount: clientes.count,
         page,
         limit,
       });
