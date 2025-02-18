@@ -12,25 +12,25 @@ interface CustomRequest extends Request {
   };
 }
 
-// Função para buscar todos os clientes da loja do usuário
-export const getClientes = [
-  //checkPermission('Clientes', 'ler'), // Verifica permissão de leitura
-  async (req: CustomRequest, res: Response) => {
-    try {
+// // Função para buscar todos os clientes da loja do usuário
+// export const getClientes = [
+//   //checkPermission('Clientes', 'ler'), // Verifica permissão de leitura
+//   async (req: CustomRequest, res: Response) => {
+//     try {
     
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const clientes = await Cliente.findAll({ where: {  Lojas_idLoja: idLoja } });
+//       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+//       const clientes = await Cliente.findAll({ where: {  Lojas_idLoja: idLoja } });
 
-      if(clientes.length === 0){
-        res.status(500).json({ message: 'Não há clientes cadastrados na sua loja.' });  
-      }else{
-      res.json(clientes);}
-    } catch (error) {
-      res.status(500).json({ message: 'Erro ao buscar clientes' });
-      console.log(error);
-    }
-  },
-];
+//       if(clientes.length === 0){
+//         res.status(500).json({ message: 'Não há clientes cadastrados na sua loja.' });  
+//       }else{
+//       res.json(clientes);}
+//     } catch (error) {
+//       res.status(500).json({ message: 'Erro ao buscar clientes' });
+//       console.log(error);
+//     }
+//   },
+// ];
 
 // Função para buscar todos os clientes da loja com filtros
 export const getClientesFilter = async (req: CustomRequest, res: Response): Promise<void> => {
