@@ -15,14 +15,14 @@ export class Cliente extends Model {
   public Celular!: string | null;
   public Celular2!: string | null;
   public RG!: string | null;
-  public Tipo_Cliente!: "Pessoa Física" | "Pessoa Jurídica" | null;
+  public Tipo_Cliente!: string | null;
   public Email!: string;
   public Grupo!: string | null;
   public StatusAutoRastrear!: string | null;
   public StatusLoja!: string | null;
   public Data_Nascimento!: Date | null;
-  public Sexo!: "Masculino" | "Feminino" | "Outro" | null;
-  public Estado_Civil!: "Solteiro" | "Casado" | "Divorciado" | "Viúvo" | null;
+  public Sexo!: string | null;
+  public Estado_Civil!: string | null;
   public Lojas_idLoja!: number;
 
 
@@ -73,7 +73,7 @@ Cliente.init(
       allowNull: true,
     },
     Tipo_Cliente: {
-      type: DataTypes.ENUM("Pessoa Física", "Pessoa Jurídica"),
+      type: DataTypes.STRING(50),
       allowNull: true,
     },
     Email: {
@@ -98,11 +98,11 @@ Cliente.init(
       allowNull: true,
     },
     Sexo: {
-      type: DataTypes.ENUM("Masculino", "Feminino", "Outro"),
+      type: DataTypes.STRING(50),
       allowNull: true,
     },
     Estado_Civil: {
-      type: DataTypes.ENUM("Solteiro", "Casado", "Divorciado", "Viúvo"),
+      type: DataTypes.STRING(50),
       allowNull: true,
     },
     
