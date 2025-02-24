@@ -77,7 +77,7 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
     }
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar clientes' });
-    console.log(error);
+    //console.log(error);
   }
 };
 
@@ -164,6 +164,7 @@ export const deleteCliente = [
     try {
       const { idCliente } = req.params;
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      //console.log("ID: ", idLoja);
       const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
       //console.log("CL: ", cliente);
       if (!cliente) {

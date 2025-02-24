@@ -8,7 +8,7 @@ import { sequelize } from "./config/database"; // Conexão com o banco de dados
 import "../src/models/associations"; // Importa e define as associações
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: '*' }));// aceita todas origens. ALTERAR DEPOIS!!!!
 app.use(bodyParser.json());
 
 app.use("/auth", rotas);
