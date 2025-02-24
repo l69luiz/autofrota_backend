@@ -24,6 +24,8 @@ export class Cliente extends Model {
   public Sexo!: "Masculino" | "Feminino" | "Outro" | null;
   public Estado_Civil!: "Solteiro" | "Casado" | "Divorciado" | "Viúvo" | null;
   public Lojas_idLoja!: number;
+
+
 }
 
 Cliente.init(

@@ -104,6 +104,8 @@ export const createCliente = [
         Data_Nascimento,
         Sexo,
         Estado_Civil,
+        StatusAutoRastrear,
+        StatusLoja
         
       } = req.body;
       //const {  } = req.user; // ID da loja do usuário logado
@@ -114,6 +116,13 @@ export const createCliente = [
       const clienteExistente = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
       if (clienteExistente) {
         res.status(400).json({ message: "CPF/CNPJ já está em uso nesta loja." });
+        return;
+      }
+      // Verificar se o Email já existe
+      //const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const clienteExistenteEmail = await Cliente.findOne({ where: { Email, Lojas_idLoja: idLoja } });
+      if (clienteExistenteEmail) {
+        res.status(400).json({ message: "Email já está em uso nesta loja." });
         return;
       }
 
@@ -135,12 +144,15 @@ export const createCliente = [
         Data_Nascimento,
         Sexo,
         Estado_Civil,
-        Lojas_idLoja
+        Lojas_idLoja,
+        StatusAutoRastrear,
+        StatusLoja
       });
 
       res.status(201).json(cliente);
     } catch (error) {
       res.status(500).json({ message: 'Erro ao criar cliente' });
+      console.log(error);
     }
   },
 ];
