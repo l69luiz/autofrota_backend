@@ -17,7 +17,7 @@ interface CustomRequest extends Request {
 //   //checkPermission('Clientes', 'ler'), // Verifica permissão de leitura
 //   async (req: CustomRequest, res: Response) => {
 //     try {
-    
+
 //       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
 //       const clientes = await Cliente.findAll({ where: {  Lojas_idLoja: idLoja } });
 
@@ -40,12 +40,12 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
 
     // Pega os parâmetros da URL (para filtros e paginação)
     const { _page, _limit, nome_like } = req.query;
-    
+
     // Converte _page e _limit para inteiros e define valores padrão caso sejam inválidos
     const page = !isNaN(parseInt(_page as string)) ? parseInt(_page as string, 10) : 1;
     const limit = !isNaN(parseInt(_limit as string)) ? parseInt(_limit as string, 10) : 10;
     const offset = (page - 1) * limit;
-    
+
     // Constrói a condição de filtro para o nome completo, se fornecido
     const whereCondition = {
       Lojas_idLoja: idLoja, // Filtro pela loja do usuário logado
@@ -106,11 +106,11 @@ export const createCliente = [
         Estado_Civil,
         StatusAutoRastrear,
         StatusLoja
-        
+
       } = req.body;
       //const {  } = req.user; // ID da loja do usuário logado
 
-      
+
       // Verificar se o CPF/CNPJ já existe
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
       const clienteExistente = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
@@ -180,6 +180,44 @@ export const deleteCliente = [
   },
 ];
 
+
+
+// export const verificarEmailBanco = async (idClienteAtaul: number, emaildigitado: string,  idLoja: number) => {
+
+//   const clienteExistenteEmail = await Cliente.findOne({ where: { Email: emaildigitado, Lojas_idLoja: idLoja, idCliente: idClienteAtaul } });
+//     if (clienteExistenteEmail) {
+//       console.log("Igual");
+//       return "igual";
+//     }
+//     else{
+//         const clienteExistenteEmail2 = await Cliente.findOne({ where: { Email: emaildigitado, Lojas_idLoja: idLoja } });
+//         if (clienteExistenteEmail2) {
+  
+//         console.log("Diferente mas tem no banco");
+//         return "Proibido";
+//       }else{  
+//         console.log("Não tem no banco");
+//         return "Ausente";
+//       }
+      
+  
+      
+      
+//    } 
+
+// };
+
+// export const verificarCPF_CNPJBanco = async (CPF_CNPJdigitado: string, idLoja: number | undefined): Promise<boolean> => {
+//     const clienteExistenteCPF_CNPJ = await Cliente.findOne({ where: { CPF_CNPJ: CPF_CNPJdigitado, Lojas_idLoja: idLoja } });
+//     if (clienteExistenteCPF_CNPJ) {
+//       return true;
+//     }else{
+//       return false;
+//    }
+// };
+
+
+
 // Função para atualizar os dados de um cliente na loja do usuário
 export const updateCliente = [
   //checkPermission('Clientes', 'atualizar'), // Verifica permissão de atualizar
@@ -203,7 +241,7 @@ export const updateCliente = [
         Sexo,
         Estado_Civil,
       } = req.body;
-      
+
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
       const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
       if (!cliente) {
@@ -211,8 +249,51 @@ export const updateCliente = [
         return;
       }
 
+    // Verificar se o e-mail foi alterado
+    if (Email && Email !== cliente.Email) {
+      // Verificar se o novo e-mail já está em uso em outra conta na mesma loja
+      const clienteExistenteEmail = await Cliente.findOne({
+        where: {
+          Email,
+          Lojas_idLoja: idLoja,
+          idCliente: { [Op.ne]: idCliente }, // Exclui o cliente atual da verificação
+        },
+      });
+
+      if (clienteExistenteEmail) {
+        res.status(400).json({ message: "O novo e-mail já está em uso nesta loja." });
+        return;
+      }
+
+      // Atualizar o e-mail se não estiver em uso
+      cliente.Email = Email;
+    }
+
+    // Verificar se o CPF_CNPJ foi alterado
+    if (CPF_CNPJ && CPF_CNPJ !== cliente.CPF_CNPJ) {
+      // Verificar se o novo CPF_CNPJ já está em uso em outra conta na mesma loja
+      const clienteExistenteCPF_CNPJ = await Cliente.findOne({
+        where: {
+          CPF_CNPJ,
+          Lojas_idLoja: idLoja,
+          idCliente: { [Op.ne]: idCliente }, // Exclui o cliente atual da verificação
+        },
+      });
+
+      if (clienteExistenteCPF_CNPJ) {
+        res.status(400).json({ message: "O novo CPF ou CNPJ já está em uso nesta loja." });
+        return;
+      }
+
+      // Atualizar o e-mail se não estiver em uso
+      cliente.CPF_CNPJ = CPF_CNPJ;
+    }
+
+
+
+
       cliente.Nome = Nome || cliente.Nome;
-      cliente.CPF_CNPJ = CPF_CNPJ || cliente.CPF_CNPJ;
+      //cliente.CPF_CNPJ = CPF_CNPJ || cliente.CPF_CNPJ;
       cliente.Rua = Rua || cliente.Rua;
       cliente.Numero = Numero || cliente.Numero;
       cliente.Bairro = Bairro || cliente.Bairro;
@@ -221,16 +302,16 @@ export const updateCliente = [
       cliente.Celular2 = Celular2 || cliente.Celular2;
       cliente.RG = RG || cliente.RG;
       cliente.Tipo_Cliente = Tipo_Cliente || cliente.Tipo_Cliente;
-      cliente.Email = Email || cliente.Email;
+      //cliente.Email = Email || cliente.Email;
       cliente.Grupo = Grupo || cliente.Grupo;
       cliente.Data_Nascimento = Data_Nascimento || cliente.Data_Nascimento;
       cliente.Sexo = Sexo || cliente.Sexo;
       cliente.Estado_Civil = Estado_Civil || cliente.Estado_Civil;
-
       await cliente.save();
-      res.status(200).json(cliente);
+      //res.status(200).json(cliente);
+      res.status(200).json({ message: 'Registro atualizado com sucesso!' });
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao atualizar cliente' });
+      res.status(500).json({ message: 'Erro ao atualizar registro.' });
     }
   },
 ];
