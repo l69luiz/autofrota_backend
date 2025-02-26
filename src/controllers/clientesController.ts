@@ -94,6 +94,7 @@ export const createCliente = [
         Rua,
         Numero,
         Bairro,
+        Estado,
         Cidade,
         Celular,
         Celular2,
@@ -134,6 +135,7 @@ export const createCliente = [
         Rua,
         Numero,
         Bairro,
+        Estado,
         Cidade,
         Celular,
         Celular2,
@@ -230,6 +232,7 @@ export const updateCliente = [
         Rua,
         Numero,
         Bairro,
+        Estado,
         Cidade,
         Celular,
         Celular2,
@@ -297,6 +300,7 @@ export const updateCliente = [
       cliente.Rua = Rua || cliente.Rua;
       cliente.Numero = Numero || cliente.Numero;
       cliente.Bairro = Bairro || cliente.Bairro;
+      cliente.Estado = Estado || cliente.Estado;
       cliente.Cidade = Cidade || cliente.Cidade;
       cliente.Celular = Celular || cliente.Celular;
       cliente.Celular2 = Celular2 || cliente.Celular2;

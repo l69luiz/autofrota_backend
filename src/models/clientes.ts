@@ -11,6 +11,7 @@ export class Cliente extends Model {
   public Rua!: string | null;
   public Numero!: string | null;
   public Bairro!: string | null;
+  public Estado!: string | null;
   public Cidade!: string | null;
   public Celular!: string | null;
   public Celular2!: string | null;
@@ -54,6 +55,10 @@ Cliente.init(
     },
     Bairro: {
       type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    Estado: {
+      type: DataTypes.STRING(25),
       allowNull: true,
     },
     Cidade: {
