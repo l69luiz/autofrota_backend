@@ -8,6 +8,7 @@ export class Cliente extends Model {
   public idCliente!: number;
   public Nome!: string;
   public CPF_CNPJ!: string;
+  public CEP!: string;
   public Rua!: string | null;
   public Numero!: string | null;
   public Bairro!: string | null;
@@ -47,6 +48,10 @@ Cliente.init(
     },
     Rua: {
       type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    CEP: {
+      type: DataTypes.STRING(10),
       allowNull: true,
     },
     Numero: {

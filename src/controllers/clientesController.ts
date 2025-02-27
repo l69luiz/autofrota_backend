@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { Cliente } from '../models/clientes'; // Modelo de Cliente
 import { Op } from 'sequelize';
+import { Console } from 'console';
 //import { checkPermission } from '../middlewares/authMiddleware'; // Importando o middleware de permissões
 
 interface CustomRequest extends Request {
@@ -91,6 +92,7 @@ export const createCliente = [
       const {
         Nome,
         CPF_CNPJ,
+        CEP,
         Rua,
         Numero,
         Bairro,
@@ -114,14 +116,20 @@ export const createCliente = [
 
       // Verificar se o CPF/CNPJ já existe
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const clienteExistente = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
-      if (clienteExistente) {
+      const clienteExistenteCPF_CNPJ = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
+      console.log(clienteExistenteCPF_CNPJ);
+      console.log(idLoja);
+      console.log(Email);
+      if (clienteExistenteCPF_CNPJ) {
         res.status(400).json({ message: "CPF/CNPJ já está em uso nesta loja." });
         return;
       }
       // Verificar se o Email já existe
       //const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
       const clienteExistenteEmail = await Cliente.findOne({ where: { Email, Lojas_idLoja: idLoja } });
+      console.log(clienteExistenteEmail);
+      console.log(idLoja);
+      console.log(Email);
       if (clienteExistenteEmail) {
         res.status(400).json({ message: "Email já está em uso nesta loja." });
         return;
@@ -132,6 +140,7 @@ export const createCliente = [
       const cliente = await Cliente.create({
         Nome,
         CPF_CNPJ,
+        CEP,
         Rua,
         Numero,
         Bairro,
@@ -229,6 +238,7 @@ export const updateCliente = [
       const {
         Nome,
         CPF_CNPJ,
+        CEP,
         Rua,
         Numero,
         Bairro,
@@ -297,6 +307,7 @@ export const updateCliente = [
 
       cliente.Nome = Nome || cliente.Nome;
       //cliente.CPF_CNPJ = CPF_CNPJ || cliente.CPF_CNPJ;
+      cliente.CEP = CEP || cliente.CEP;
       cliente.Rua = Rua || cliente.Rua;
       cliente.Numero = Numero || cliente.Numero;
       cliente.Bairro = Bairro || cliente.Bairro;
