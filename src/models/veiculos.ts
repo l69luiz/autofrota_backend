@@ -13,6 +13,7 @@ export class Veiculo extends Model {
   public Nr_Motor!: string | null;
   public Marca!: string | null;
   public Modelo!: string | null;
+  public StatusVeiculo!: string | null;
   public Ano_fab!: number | null;
   public Ano_mod!: number | null;
   public Nr_portas!: number | null;
@@ -67,6 +68,10 @@ Veiculo.init(
     },
     Modelo: {
       type: DataTypes.STRING(60),
+      allowNull: true,
+    },
+    StatusVeiculo: {
+      type: DataTypes.STRING(45),
       allowNull: true,
     },
     Ano_fab: {

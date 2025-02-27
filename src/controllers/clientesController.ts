@@ -2,8 +2,6 @@
 import { Request, Response } from 'express';
 import { Cliente } from '../models/clientes'; // Modelo de Cliente
 import { Op } from 'sequelize';
-import { Console } from 'console';
-//import { checkPermission } from '../middlewares/authMiddleware'; // Importando o middleware de permissões
 
 interface CustomRequest extends Request {
   user?: {
@@ -12,26 +10,6 @@ interface CustomRequest extends Request {
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
-
-// // Função para buscar todos os clientes da loja do usuário
-// export const getClientes = [
-//   //checkPermission('Clientes', 'ler'), // Verifica permissão de leitura
-//   async (req: CustomRequest, res: Response) => {
-//     try {
-
-//       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-//       const clientes = await Cliente.findAll({ where: {  Lojas_idLoja: idLoja } });
-
-//       if(clientes.length === 0){
-//         res.status(500).json({ message: 'Não há clientes cadastrados na sua loja.' });  
-//       }else{
-//       res.json(clientes);}
-//     } catch (error) {
-//       res.status(500).json({ message: 'Erro ao buscar clientes' });
-//       console.log(error);
-//     }
-//   },
-// ];
 
 // Função para buscar todos os clientes da loja com filtros
 export const getClientesFilter = async (req: CustomRequest, res: Response): Promise<void> => {
@@ -82,8 +60,6 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
   }
 };
 
-
-
 // Função para criar um novo cliente na loja do usuário
 export const createCliente = [
   //checkPermission('Clientes', 'criar'), // Verifica permissão de criação
@@ -111,25 +87,16 @@ export const createCliente = [
         StatusLoja
 
       } = req.body;
-      //const {  } = req.user; // ID da loja do usuário logado
-
 
       // Verificar se o CPF/CNPJ já existe
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
       const clienteExistenteCPF_CNPJ = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
-      console.log(clienteExistenteCPF_CNPJ);
-      console.log(idLoja);
-      console.log(Email);
       if (clienteExistenteCPF_CNPJ) {
         res.status(400).json({ message: "CPF/CNPJ já está em uso nesta loja." });
         return;
       }
       // Verificar se o Email já existe
-      //const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
       const clienteExistenteEmail = await Cliente.findOne({ where: { Email, Lojas_idLoja: idLoja } });
-      console.log(clienteExistenteEmail);
-      console.log(idLoja);
-      console.log(Email);
       if (clienteExistenteEmail) {
         res.status(400).json({ message: "Email já está em uso nesta loja." });
         return;
@@ -163,21 +130,17 @@ export const createCliente = [
       res.status(201).json(cliente);
     } catch (error) {
       res.status(500).json({ message: 'Erro ao criar registro' });
-      //console.log(error);
     }
   },
 ];
 
 // Função para excluir um cliente da loja do usuário
 export const deleteCliente = [
-  //checkPermission('Clientes', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idCliente } = req.params;
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      //console.log("ID: ", idLoja);
-      const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
-      //console.log("CL: ", cliente);
+       const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
       if (!cliente) {
         res.status(404).json({ message: 'Cliente não encontrado nesta loja' });
         return;
@@ -191,48 +154,9 @@ export const deleteCliente = [
   },
 ];
 
-
-
-// export const verificarEmailBanco = async (idClienteAtaul: number, emaildigitado: string,  idLoja: number) => {
-
-//   const clienteExistenteEmail = await Cliente.findOne({ where: { Email: emaildigitado, Lojas_idLoja: idLoja, idCliente: idClienteAtaul } });
-//     if (clienteExistenteEmail) {
-//       console.log("Igual");
-//       return "igual";
-//     }
-//     else{
-//         const clienteExistenteEmail2 = await Cliente.findOne({ where: { Email: emaildigitado, Lojas_idLoja: idLoja } });
-//         if (clienteExistenteEmail2) {
-  
-//         console.log("Diferente mas tem no banco");
-//         return "Proibido";
-//       }else{  
-//         console.log("Não tem no banco");
-//         return "Ausente";
-//       }
-      
-  
-      
-      
-//    } 
-
-// };
-
-// export const verificarCPF_CNPJBanco = async (CPF_CNPJdigitado: string, idLoja: number | undefined): Promise<boolean> => {
-//     const clienteExistenteCPF_CNPJ = await Cliente.findOne({ where: { CPF_CNPJ: CPF_CNPJdigitado, Lojas_idLoja: idLoja } });
-//     if (clienteExistenteCPF_CNPJ) {
-//       return true;
-//     }else{
-//       return false;
-//    }
-// };
-
-
-
 // Função para atualizar os dados de um cliente na loja do usuário
 export const updateCliente = [
-  //checkPermission('Clientes', 'atualizar'), // Verifica permissão de atualizar
-  async (req: CustomRequest, res: Response): Promise<void> => {
+   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idCliente } = req.params;
       const {
@@ -302,11 +226,7 @@ export const updateCliente = [
       cliente.CPF_CNPJ = CPF_CNPJ;
     }
 
-
-
-
       cliente.Nome = Nome || cliente.Nome;
-      //cliente.CPF_CNPJ = CPF_CNPJ || cliente.CPF_CNPJ;
       cliente.CEP = CEP || cliente.CEP;
       cliente.Rua = Rua || cliente.Rua;
       cliente.Numero = Numero || cliente.Numero;
@@ -317,36 +237,30 @@ export const updateCliente = [
       cliente.Celular2 = Celular2 || cliente.Celular2;
       cliente.RG = RG || cliente.RG;
       cliente.Tipo_Cliente = Tipo_Cliente || cliente.Tipo_Cliente;
-      //cliente.Email = Email || cliente.Email;
       cliente.Grupo = Grupo || cliente.Grupo;
       cliente.Data_Nascimento = Data_Nascimento || cliente.Data_Nascimento;
       cliente.Sexo = Sexo || cliente.Sexo;
       cliente.Estado_Civil = Estado_Civil || cliente.Estado_Civil;
       await cliente.save();
-      //res.status(200).json(cliente);
-      res.status(200).json({ message: 'Registro atualizado com sucesso!' });
+        res.status(200).json({ message: 'Registro atualizado com sucesso!' });
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao atualizar registro.' });
+        res.status(500).json({ message: 'Erro ao atualizar registro.' });
     }
   },
 ];
 
 // Função para buscar cliente por CPF/CNPJ na loja do usuário
 export const getClienteByCPF_CNPJ = [
-  //checkPermission('Clientes', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { CPF_CNPJ } = req.params;
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-
       const cliente = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
-
       if (!cliente) {
         res.status(404).json({ message: "Cliente não encontrado com este CPF/CNPJ nesta loja." });
         return;
       }
-
-      res.status(200).json(cliente);
+        res.status(200).json(cliente);
     } catch (error) {
       res.status(500).json({ message: 'Erro ao buscar cliente pelo CPF/CNPJ' });
     }
@@ -355,14 +269,11 @@ export const getClienteByCPF_CNPJ = [
 
 // Função para buscar cliente por ID na loja do usuário
 export const getClienteById = [
-  //checkPermission('Clientes', 'ler'), // Verifica permissão de leitura
-  async (req: CustomRequest, res: Response): Promise<void> => {
+   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idCliente } = req.params;
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-
       const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
-
       if (!cliente) {
         res.status(404).json({ message: "Cliente não encontrado com este ID nesta loja." });
         return;
