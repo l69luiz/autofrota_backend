@@ -19,7 +19,7 @@ export const getVeiculosFilter = async (req: CustomRequest, res: Response): Prom
     const idLoja = req.user?.idlojaToken;
 
     // Pega os parâmetros da URL (para filtros e paginação)
-    const { _page, _limit, modelo_like, marca_like } = req.query;
+    const { _page, _limit, search } = req.query;
 
     // Converte _page e _limit para inteiros e define valores padrão caso sejam inválidos
     const page = !isNaN(parseInt(_page as string)) ? parseInt(_page as string, 10) : 1;
@@ -35,18 +35,15 @@ export const getVeiculosFilter = async (req: CustomRequest, res: Response): Prom
     // Extrai os IDs dos estoques
     const idsEstoques = estoques.map((estoque) => estoque.idEstoque);
 
-    // Constrói a condição de filtro para o modelo e marca, se fornecidos
+    // Constrói a condição de filtro para busca em múltiplos campos
     const whereCondition = {
       Estoque_idEstoque: { [Op.in]: idsEstoques }, // Filtra pelos estoques da loja
-      ...(modelo_like && {
-        Modelo: {
-          [Op.like]: `%${modelo_like}%`,
-        },
-      }),
-      ...(marca_like && {
-        Marca: {
-          [Op.like]: `%${marca_like}%`,
-        },
+      ...(search && {
+        [Op.or]: [
+          { Placa_Veiculo: { [Op.like]: `%${search}%` } }, // Busca por placa
+          { Marca: { [Op.like]: `%${search}%` } }, // Busca por marca
+          { Modelo: { [Op.like]: `%${search}%` } }, // Busca por modelo
+        ],
       }),
     };
 
@@ -75,6 +72,7 @@ export const getVeiculosFilter = async (req: CustomRequest, res: Response): Prom
     console.error(error);
   }
 };
+
 
 // Função para criar um novo veículo no estoque da loja do usuário
 export const createVeiculo = [
@@ -132,6 +130,7 @@ export const createVeiculo = [
       });
 
       if (veiculoExistentePlaca) {
+        console.log();
         res.status(400).json({ message: 'A placa já está em uso nesta loja.' });
         return;
       }
@@ -201,6 +200,7 @@ export const createVeiculo = [
 
       res.status(201).json(veiculo);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: 'Erro ao criar veículo' });
       console.error(error);
     }

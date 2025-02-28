@@ -25,7 +25,7 @@ export class Veiculo extends Model {
   public Vidro_elet!: boolean | null;
   public Multimidia!: boolean | null;
   public Sensor_Re!: boolean | null;
-  public Vr_PadraoAluguel!: string | null;
+  public Vr_PadraoAluguel!: number | null;
   public Trava_Elet!: boolean | null;
   public Alarme!: boolean | null;
   public Valor_Entrada!: number | null;
@@ -115,7 +115,7 @@ Veiculo.init(
       allowNull: true,
     },
     Vr_PadraoAluguel: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
     CaminhoImgVeiculo: {
