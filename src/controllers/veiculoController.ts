@@ -1,3 +1,4 @@
+//src/controllers/veiculoController.ts
 import { Request, Response } from 'express';
 import { Veiculo } from '../models/veiculos'; // Modelo de Veículo
 import { Estoque } from '../models/estoques'; // Modelo de Estoque
@@ -115,6 +116,57 @@ export const createVeiculo = [
 
       if (!estoque) {
         res.status(400).json({ message: 'Estoque não pertence à sua loja.' });
+        return;
+      }
+
+      // Verificar se a placa já está em uso em outro veículo na mesma loja
+      const veiculoExistentePlaca = await Veiculo.findOne({
+        include: [
+          {
+            model: Estoque,
+            as: 'estoque',
+            where: { Lojas_idLoja: idLoja },
+          },
+        ],
+        where: { Placa_Veiculo },
+      });
+
+      if (veiculoExistentePlaca) {
+        res.status(400).json({ message: 'A placa já está em uso nesta loja.' });
+        return;
+      }
+
+      // Verificar se o chassi já está em uso em outro veículo na mesma loja
+      const veiculoExistenteChassi = await Veiculo.findOne({
+        include: [
+          {
+            model: Estoque,
+            as: 'estoque',
+            where: { Lojas_idLoja: idLoja },
+          },
+        ],
+        where: { Chassi },
+      });
+
+      if (veiculoExistenteChassi) {
+        res.status(400).json({ message: 'O chassi já está em uso nesta loja.' });
+        return;
+      }
+
+      // Verificar se o renavan já está em uso em outro veículo na mesma loja
+      const veiculoExistenteRenavan = await Veiculo.findOne({
+        include: [
+          {
+            model: Estoque,
+            as: 'estoque',
+            where: { Lojas_idLoja: idLoja },
+          },
+        ],
+        where: { Renavan },
+      });
+
+      if (veiculoExistenteRenavan) {
+        res.status(400).json({ message: 'O renavan já está em uso nesta loja.' });
         return;
       }
 
@@ -292,8 +344,36 @@ export const updateVeiculo = [
         veiculo.Chassi = Chassi;
       }
 
+      // Verificar se O RENAVAN foi alterado
+      if (Renavan && Renavan !== veiculo.Renavan) {
+        // Verificar se o RENAVAN já está em uso em outro veículo na mesma loja
+        const veiculoExistenteRenavan = await Veiculo.findOne({
+          include: [
+            {
+              model: Estoque,
+              as: 'estoque',
+              where: { Lojas_idLoja: idLoja },
+            },
+          ],
+          where: {
+            Renavan,
+            idVeiculo: { [Op.ne]: idVeiculo }, // Exclui o veículo atual da verificação
+          },
+        });
+
+        if (veiculoExistenteRenavan) {
+          res.status(400).json({ message: 'O novo RENAVAM já está em uso nesta loja.' });
+          return;
+        }
+
+        // Atualizar a placa se não estiver em uso
+        veiculo.Renavan = Renavan;
+      }
+
+
+
+
       // Atualizar os demais campos
-      veiculo.Renavan = Renavan || veiculo.Renavan;
       veiculo.Cor = Cor || veiculo.Cor;
       veiculo.Nr_Motor = Nr_Motor || veiculo.Nr_Motor;
       veiculo.Marca = Marca || veiculo.Marca;
@@ -353,6 +433,39 @@ export const getVeiculoById = [
       res.status(200).json(veiculo);
     } catch (error) {
       res.status(500).json({ message: 'Erro ao buscar veículo pelo ID' });
+      console.error(error);
+    }
+  },
+];
+
+
+// Função para buscar veículo por ID no estoque da loja do usuário
+export const getVeiculoByPlaca = [
+  async (req: CustomRequest, res: Response): Promise<void> => {
+    try {
+      const { Placa_Veiculo } = req.params;
+      const idLoja = req.user?.idlojaToken;
+
+      // Verifica se o veículo pertence a um estoque da loja do usuário
+      const veiculo = await Veiculo.findOne({
+        include: [
+          {
+            model: Estoque,
+            as: 'estoque',
+            where: { Lojas_idLoja: idLoja },
+          },
+        ],
+        where: { Placa_Veiculo },
+      });
+
+      if (!veiculo) {
+        res.status(404).json({ message: 'Veículo não encontrado na sua loja.' });
+        return;
+      }
+
+      res.status(200).json(veiculo);
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao buscar veículo pela Placa' });
       console.error(error);
     }
   },

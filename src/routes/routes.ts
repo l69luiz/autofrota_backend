@@ -22,7 +22,7 @@ import {
 } from '../controllers/lojasController'; // Importando as funções de lojas
 
 import { 
-  getVeiculos, 
+  getVeiculosFilter, 
   createVeiculo, 
   updateVeiculo, 
   deleteVeiculo, 
@@ -128,7 +128,7 @@ router.put('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', '
 router.delete('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', 'deletar'), deleteUsuario); // Verificando permissão 'deletar' para a tabela 'Usuarios'
 
 // Rotas de veículos
-router.get('/veiculos', authMiddleware, checkPermission('Veiculo', 'ler'), getVeiculos); // Verificando permissão 'ler' para a tabela 'Veiculos'
+router.get('/veiculos', authMiddleware, checkPermission('Veiculo', 'ler'), getVeiculosFilter); // Verificando permissão 'ler' para a tabela 'Veiculos'
 router.post('/veiculos', authMiddleware, checkPermission('Veiculo', 'criar'), createVeiculo); // Verificando permissão 'criar' para a tabela 'Veiculos'
 router.get('/veiculos/placa/:Placa_Veiculo', authMiddleware, checkPermission('Veiculo', 'ler'), getVeiculoByPlaca); // Verificando permissão 'ler' para a tabela 'Veiculos'
 router.get('/veiculos/:idVeiculo', authMiddleware, checkPermission('Veiculo', 'ler'), getVeiculoById); // Verificando permissão 'ler' para a tabela 'Veiculos'
