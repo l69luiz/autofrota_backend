@@ -6,8 +6,9 @@ import { Loja } from "./lojas"; // Import do model Lojas
 
 export class Estoque extends Model {
   public idEstoque!: number;
-  public Quantidade!: number;
-  public Data_Entrada!: Date | null;
+  public AreaTotal!: number;
+  public AreaCoberta!: number;
+  public Data_Abertura!: Date | null;
   public Status!: string | null;
   public Lojas_idLoja!: number;
   public Local!: string | null;
@@ -23,11 +24,15 @@ Estoque.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    Quantidade: {
+    AreaTotal: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    Data_Entrada: {
+    AreaCoberta: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    Data_Abertura: {
       type: DataTypes.DATE,
       allowNull: true,
     },

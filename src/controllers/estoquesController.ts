@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { Estoque } from '../models/estoques'; // Modelo de Estoque
 import { checkPermission } from '../middlewares/authMiddleware'; // Importando o middleware de permissões
+import { Op } from 'sequelize';
 
 interface CustomRequest extends Request {
   user?: {
@@ -10,6 +11,61 @@ interface CustomRequest extends Request {
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
+
+
+// Função para buscar estoques da loja do usuário com filtros e paginação
+export const getEstoquesFilter = [
+  checkPermission('Estoque', 'ler'), // Verifica permissão de leitura
+  async (req: CustomRequest, res: Response): Promise<void> => {
+    try {
+      // Pega o ID da loja do usuário autenticado
+      const idLoja = req.user?.idlojaToken;
+
+      // Pega os parâmetros da URL (para filtros e paginação)
+      const { _page, _limit, nome_like } = req.query;
+
+      // Converte _page e _limit para inteiros e define valores padrão caso sejam inválidos
+      const page = !isNaN(parseInt(_page as string)) ? parseInt(_page as string, 10) : 1;
+      const limit = !isNaN(parseInt(_limit as string)) ? parseInt(_limit as string, 10) : 10;
+      const offset = (page - 1) * limit;
+
+      // Constrói a condição de filtro para o nome, se fornecido
+      const whereCondition = {
+        Lojas_idLoja: idLoja, // Filtro pela loja do usuário logado
+        ...(nome_like && {
+          Nome: {
+            [Op.like]: `%${nome_like}%`, // Filtro por nome (case-insensitive)
+          },
+        }),
+      };
+
+      // Faz a consulta ao banco de dados com paginação e filtro
+      const estoques = await Estoque.findAndCountAll({
+        where: whereCondition,
+        limit: limit,
+        offset: offset,
+      });
+
+      // Verifica se há estoques e envia a resposta apropriada
+      if (estoques.rows.length === 0) {
+        res.status(404).json({ message: 'Não há estoques cadastrados na sua loja.' });
+      } else {
+        // Envia a lista de estoques com a contagem total, paginação e dados
+        res.status(200).json({
+          data: estoques.rows,
+          totalCount: estoques.count,
+          page,
+          limit,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao buscar estoques' });
+      console.error(error); // Log do erro para depuração
+    }
+  },
+];
+
+
 
 // Função para buscar todos os estoques da loja do usuário
 export const getEstoques = [
@@ -35,13 +91,14 @@ export const createEstoque = [
   checkPermission('Estoque', 'criar'), // Verifica permissão de criação
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const { Quantidade, Data_Entrada, Status, Local, Nome } = req.body;
+      const { AreaTotal, AreaCoberta, Data_Abertura, Status, Local, Nome } = req.body;
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
 
       // Criar o novo estoque
       const estoque = await Estoque.create({
-        Quantidade,
-        Data_Entrada,
+        AreaTotal,
+        AreaCoberta,
+        Data_Abertura,
         Status,
         Lojas_idLoja: idLoja, // Atribui o idLoja do usuário logado
         Local,
@@ -83,7 +140,7 @@ export const updateEstoque = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idEstoque } = req.params;
-      const { Quantidade, Data_Entrada, Status, Local, Nome } = req.body;
+      const { AreaTotal, AreaCoberta, Data_Abertura, Status, Local, Nome } = req.body;
       const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
 
       const estoque = await Estoque.findOne({ where: { idEstoque, Lojas_idLoja: idLoja } });
@@ -92,8 +149,9 @@ export const updateEstoque = [
         return;
       }
 
-      estoque.Quantidade = Quantidade !== undefined ? Quantidade : estoque.Quantidade;
-      estoque.Data_Entrada = Data_Entrada !== undefined ? Data_Entrada : estoque.Data_Entrada;
+      estoque.AreaTotal = AreaCoberta !== undefined ? AreaCoberta : estoque.AreaCoberta;
+      estoque.AreaTotal = AreaTotal !== undefined ? AreaTotal : estoque.AreaTotal;
+      estoque.Data_Abertura = Data_Abertura !== undefined ? Data_Abertura : estoque.Data_Abertura;
       estoque.Status = Status !== undefined ? Status : estoque.Status;
       estoque.Local = Local !== undefined ? Local : estoque.Local;
       estoque.Nome = Nome !== undefined ? Nome : estoque.Nome;

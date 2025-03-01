@@ -39,7 +39,8 @@ import {
 //   getClientesFilter
 // } from '../controllers/clientesController'; // Importando as funções de cliente
 import { 
-  getEstoques, 
+  getEstoques,
+  getEstoquesFilter, 
   createEstoque, 
   updateEstoque, 
   deleteEstoque, 
@@ -146,7 +147,7 @@ router.delete('/veiculos/:idVeiculo', authMiddleware, checkPermission('Veiculo',
 // router.delete('/clientes/:idCliente', authMiddleware, checkPermission('Clientes', 'deletar'), deleteCliente); // Verificando permissão 'deletar' para a tabela 'Clientes'
 
 // Rotas de estoque
-router.get('/estoques', authMiddleware, checkPermission('Estoque', 'ler'), getEstoques); // Verificando permissão 'ler' para a tabela 'Estoques'
+router.get('/estoques', authMiddleware, checkPermission('Estoque', 'ler'), getEstoquesFilter); // Verificando permissão 'ler' para a tabela 'Estoques'
 router.post('/estoques', authMiddleware, checkPermission('Estoque', 'criar'), createEstoque); // Verificando permissão 'criar' para a tabela 'Estoques'
 router.get('/estoques/:idEstoque', authMiddleware, checkPermission('Estoque', 'ler'), getEstoqueById); // Verificando permissão 'ler' para a tabela 'Estoques'
 router.put('/estoques/:idEstoque', authMiddleware, checkPermission('Estoque', 'atualizar'), updateEstoque); // Verificando permissão 'atualizar' para a tabela 'Estoques'
