@@ -2,7 +2,7 @@
 
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import { Loja } from "./lojas"; // Import do model Loja
+import { Empresa } from "./Empresas"; // Import do model Empresa
 
 export class Usuario extends Model {
   public idUsuario!: number;
@@ -23,7 +23,7 @@ export class Usuario extends Model {
   public Senha!: string;
   public Grupo!: string | null;
   public Data_Demissao!: Date | null;
-  public Lojas_idLoja!: number;
+  public Empresas_idEmpresa!: number;
   public Status!: boolean | null;
 }
 
@@ -105,12 +105,12 @@ Usuario.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
-    Lojas_idLoja: {
+    Empresas_idEmpresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Loja, // Relacionamento com a tabela Lojas
-        key: "idLoja",
+        model: Empresa, // Relacionamento com a tabela Empresas
+        key: "idEmpresa",
       },
     },
     Status: {
@@ -128,9 +128,9 @@ Usuario.init(
   }
 );
 
-// Relacionamento com Lojas (Um usuário pertence a uma loja)
-Usuario.belongsTo(Loja, {
-  foreignKey: "Lojas_idLoja",
-  as: "loja",
+// Relacionamento com Empresas (Um usuário pertence a uma empresa)
+Usuario.belongsTo(Empresa, {
+  foreignKey: "Empresas_idEmpresa",
+  as: "empresa",
 });
 

@@ -2,7 +2,7 @@
 
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import { Loja } from "./lojas"; // Import do model Loja
+import { Empresa } from "./Empresas"; // Import do model Empresa
 
 export class Cliente extends Model {
   public idCliente!: number;
@@ -21,11 +21,11 @@ export class Cliente extends Model {
   public Email!: string;
   public Grupo!: string | null;
   public StatusAutoRastrear!: string | null;
-  public StatusLoja!: string | null;
+  public StatusEmpresa!: string | null;
   public Data_Nascimento!: Date | null;
   public Sexo!: string | null;
   public Estado_Civil!: string | null;
-  public Lojas_idLoja!: number;
+  public Empresas_idEmpresa!: number;
 
 
 }
@@ -99,7 +99,7 @@ Cliente.init(
       type: DataTypes.STRING(50),
       allowNull: true,
     },
-    StatusLoja: {
+    StatusEmpresa: {
       type: DataTypes.STRING(50),
       allowNull: true,
     },
@@ -116,12 +116,12 @@ Cliente.init(
       allowNull: true,
     },
     
-    Lojas_idLoja: {
+    Empresas_idEmpresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Loja, // Relacionamento com a tabela Lojas
-        key: "idLoja",
+        model: Empresa, // Relacionamento com a tabela Empresas
+        key: "idEmpresa",
       },
     },
   },
@@ -133,8 +133,8 @@ Cliente.init(
   }
 );
 
-// Relacionamento com Lojas (Um cliente pertence a uma loja)
-Cliente.belongsTo(Loja, {
-  foreignKey: "Lojas_idLoja",
-  as: "loja",
+// Relacionamento com Empresas (Um cliente pertence a uma empresa)
+Cliente.belongsTo(Empresa, {
+  foreignKey: "Empresas_idEmpresa",
+  as: "empresa",
 });

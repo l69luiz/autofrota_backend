@@ -1,7 +1,7 @@
 //src/models/contasBancarias.ts
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../config/database';
-import { Loja } from './lojas';
+import { Empresa } from './Empresas';
 
 export class ContaBancaria extends Model {
   public idContasBancarias!: number;
@@ -16,7 +16,7 @@ export class ContaBancaria extends Model {
   public CPF_CNPJ_Titular!: string | null;
   public StatusConta!: string | null;
   public DataAbertura!: Date | null;
-  public Lojas_idLoja!: number;
+  public Empresas_idEmpresa!: number;
 
 }
 
@@ -71,12 +71,12 @@ ContaBancaria.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
-    Lojas_idLoja: {
+    Empresas_idEmpresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Loja,
-        key: 'idLoja',
+        model: Empresa,
+        key: 'idEmpresa',
       },
     },
   },
@@ -88,13 +88,13 @@ ContaBancaria.init(
   }
 );
 
-// Relacionamento com a tabela Lojas usando alias
-ContaBancaria.belongsTo(Loja,
-     { foreignKey: 'Lojas_idLoja',
-       as: 'loja' 
+// Relacionamento com a tabela Empresas usando alias
+ContaBancaria.belongsTo(Empresa,
+     { foreignKey: 'Empresas_idEmpresa',
+       as: 'empresa' 
     });
 
-Loja.hasMany(ContaBancaria,
-     { foreignKey: 'Lojas_idLoja',
+Empresa.hasMany(ContaBancaria,
+     { foreignKey: 'Empresas_idEmpresa',
        as: 'contasBancarias' 
     });

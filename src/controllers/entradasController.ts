@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { Entrada } from '../models/entradas'; // Modelo de Entrada
 import { Cliente } from '../models/clientes';
-import { Loja } from '../models/lojas';
+import { Empresa } from '../models/Empresas';
 import { ContaBancaria } from '../models/contasBancarias';
 import { Contrato } from '../models/contratos';
 import { Venda } from '../models/vendas';
@@ -10,19 +10,19 @@ import { Venda } from '../models/vendas';
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
-// Função para buscar todas as entradas da loja do usuário
+// Função para buscar todas as entradas da empresa do usuário
 export const getEntradas = [
   // checkPermission('Entrada', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca entradas filtrando pela loja do cliente associado
+      // Busca entradas filtrando pela empresa do cliente associado
       const entradas = await Entrada.findAll({
         include: [
           {
@@ -30,9 +30,9 @@ export const getEntradas = [
             as: 'cliente',
             include: [
               {
-                model: Loja,
-                as: 'loja',
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
+                model: Empresa,
+                as: 'empresa',
+                where: { idEmpresa: idEmpresa }, // Filtra pela empresa do cliente
               },
             ],
           },
@@ -55,7 +55,7 @@ export const getEntradas = [
       const entradasFiltradas = entradas.filter((entrada: any) => entrada.cliente !== null);
 
       if (entradasFiltradas.length === 0) {
-        res.status(404).json({ message: 'Não há entradas cadastradas na sua loja.' });
+        res.status(404).json({ message: 'Não há entradas cadastradas na sua empresa.' });
       } else {
         res.json(entradasFiltradas);
       }
@@ -101,15 +101,15 @@ export const createEntrada = [
   },
 ];
 
-// Função para excluir uma entrada da loja do usuário
+// Função para excluir uma entrada da empresa do usuário
 export const deleteEntrada = [
   // checkPermission('Entrada', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idEntrada } = req.params; // ID da entrada que será excluída
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca a entrada, incluindo o cliente e a loja associada
+      // Busca a entrada, incluindo o cliente e a empresa associada
       const entrada = await Entrada.findOne({
         where: { idEntrada },
         include: [
@@ -118,16 +118,16 @@ export const deleteEntrada = [
             as: 'cliente',
             include: [
               {
-                model: Loja,
-                as: 'loja',
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
+                model: Empresa,
+                as: 'empresa',
+                where: { idEmpresa: idEmpresa }, // Filtra pela empresa do cliente
               },
             ],
           },
         ],
       });
 
-      // Verifica se a entrada foi encontrada e se o cliente está associado à loja correta
+      // Verifica se a entrada foi encontrada e se o cliente está associado à empresa correta
       if (!entrada || entrada.dataValues.cliente === null) {
         res.status(404).json({ message: 'Entrada não encontrada ou você não tem permissão para excluí-la.' });
         return;
@@ -142,7 +142,7 @@ export const deleteEntrada = [
   },
 ];
 
-// Função para atualizar os dados de uma entrada da loja do usuário
+// Função para atualizar os dados de uma entrada da empresa do usuário
 export const updateEntrada = [
   // checkPermission('Entrada', 'atualizar'), // Verifica permissão de atualizar
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -159,9 +159,9 @@ export const updateEntrada = [
         ContasBancarias_idContasBancarias,
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca a entrada e verifica se o cliente associado pertence à loja do usuário
+      // Busca a entrada e verifica se o cliente associado pertence à empresa do usuário
       const entrada = await Entrada.findOne({
         where: { idEntrada },
         include: [
@@ -170,16 +170,16 @@ export const updateEntrada = [
             as: 'cliente',
             include: [
               {
-                model: Loja,
-                as: 'loja',
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
+                model: Empresa,
+                as: 'empresa',
+                where: { idEmpresa: idEmpresa }, // Filtra pela empresa do cliente
               },
             ],
           },
         ],
       });
 
-      // Verifica se a entrada foi encontrada e se o cliente pertence à loja do usuário
+      // Verifica se a entrada foi encontrada e se o cliente pertence à empresa do usuário
       if (!entrada || entrada.dataValues.cliente === null) {
         res.status(404).json({ message: 'Entrada não encontrada ou você não tem permissão para atualizá-la.' });
         return;
@@ -204,15 +204,15 @@ export const updateEntrada = [
   },
 ];
 
-// Função para buscar entrada por ID da loja do usuário
+// Função para buscar entrada por ID da empresa do usuário
 export const getEntradaById = [
   // checkPermission('Entrada', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idEntrada } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca a entrada pelo ID, garantindo que o cliente esteja associado à loja do usuário
+      // Busca a entrada pelo ID, garantindo que o cliente esteja associado à empresa do usuário
       const entrada = await Entrada.findOne({
         where: { idEntrada }, // Busca a entrada pelo ID
         include: [
@@ -221,16 +221,16 @@ export const getEntradaById = [
             as: 'cliente',
             include: [
               {
-                model: Loja,
-                as: 'loja',
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
+                model: Empresa,
+                as: 'empresa',
+                where: { idEmpresa: idEmpresa }, // Filtra pela empresa do cliente
               },
             ],
           },
         ],
       });
 
-      // Verifica se a entrada foi encontrada e se o cliente pertence à loja do usuário
+      // Verifica se a entrada foi encontrada e se o cliente pertence à empresa do usuário
       if (!entrada || entrada.dataValues.cliente === null) {
         res.status(404).json({ message: 'Entrada não encontrada ou você não tem permissão para visualizá-la.' });
         return;

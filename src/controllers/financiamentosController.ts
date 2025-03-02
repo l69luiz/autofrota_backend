@@ -2,38 +2,38 @@
 import { Request, Response } from 'express';
 import { Financiamento } from '../models/financiamentos'; // Modelo de Financiamento
 import { Cliente } from '../models/clientes';
-import { Loja } from '../models/lojas';
+import { Empresa } from '../models/Empresas';
 import { QueryTypes } from 'sequelize';
 import { sequelize } from '../config/database';
-import { GET_FINANCIAMENTOS_BY_LOJA } from '../consultasSQL/consultasFinanciamentos';
+import { GET_FINANCIAMENTOS_BY_EMPRESA } from '../consultasSQL/consultasFinanciamentos';
 
 
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
-// Função para buscar todos os financiamentos da loja do usuário
+// Função para buscar todos os financiamentos da empresa do usuário
 export const getFinanciamentos = [
   //checkPermission('Financiamento', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       // Executa a query SQL diretamente
-      const financiamentos = await sequelize.query(GET_FINANCIAMENTOS_BY_LOJA,
+      const financiamentos = await sequelize.query(GET_FINANCIAMENTOS_BY_EMPRESA,
         {
-          replacements: { idLoja: idLoja }, // Substitui o parâmetro pelo idLoja do usuário
+          replacements: { idEmpresa: idEmpresa }, // Substitui o parâmetro pelo idEmpresa do usuário
           type: QueryTypes.SELECT // Define o tipo de query
         }
       );
 
       // Verifica se encontrou algum financiamento
       if (financiamentos.length === 0) {
-        res.status(404).json({ message: 'Não há financiamentos cadastrados na sua loja.' });
+        res.status(404).json({ message: 'Não há financiamentos cadastrados na sua empresa.' });
       } else {
         res.json(financiamentos);
       }
@@ -84,15 +84,15 @@ export const createFinanciamento = [
   },
 ];
 
-// Função para excluir um financiamento da loja do usuário
+// Função para excluir um financiamento da empresa do usuário
 export const deleteFinanciamento = [
   //checkPermission('Financiamento', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idFinanciamento } = req.params; // ID do financiamento que será excluído
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca o financiamento, incluindo o cliente e a loja associada
+      // Busca o financiamento, incluindo o cliente e a empresa associada
       const financiamento = await Financiamento.findOne({
         where: { idFinanciamento },
         include: [
@@ -101,16 +101,16 @@ export const deleteFinanciamento = [
             as: 'cliente',
             include: [
               {
-                model: Loja,
-                as: 'loja',
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
+                model: Empresa,
+                as: 'empresa',
+                where: { idEmpresa: idEmpresa }, // Filtra pela empresa do cliente
               },
             ],
           },
         ],
       });
 
-      // Verifica se o financiamento foi encontrado e se o cliente está associado à loja correta
+      // Verifica se o financiamento foi encontrado e se o cliente está associado à empresa correta
       if (!financiamento || financiamento.dataValues.cliente === null) {
         res.status(404).json({ message: 'Financiamento não encontrado ou você não tem permissão para excluí-lo.' });
         return;
@@ -126,7 +126,7 @@ export const deleteFinanciamento = [
 ];
 
 
-// Função para atualizar os dados de um financiamento da loja do usuário
+// Função para atualizar os dados de um financiamento da empresa do usuário
 export const updateFinanciamento = [
   //checkPermission('Financiamento', 'atualizar'), // Verifica permissão de atualizar
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -144,9 +144,9 @@ export const updateFinanciamento = [
         Vendas_idVenda
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca o financiamento e verifica se o cliente associado pertence à loja do usuário
+      // Busca o financiamento e verifica se o cliente associado pertence à empresa do usuário
       const financiamento = await Financiamento.findOne({
         where: { idFinanciamento },
         include: [
@@ -155,16 +155,16 @@ export const updateFinanciamento = [
             as: 'cliente',
             include: [
               {
-                model: Loja,
-                as: 'loja',
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
+                model: Empresa,
+                as: 'empresa',
+                where: { idEmpresa: idEmpresa }, // Filtra pela empresa do cliente
               },
             ],
           },
         ],
       });
 
-      // Verifica se o financiamento foi encontrado e se o cliente pertence à loja do usuário
+      // Verifica se o financiamento foi encontrado e se o cliente pertence à empresa do usuário
       if (!financiamento || financiamento.dataValues.cliente === null) {
         res.status(404).json({ message: 'Financiamento não encontrado ou você não tem permissão para atualizá-lo.' });
         return;
@@ -191,15 +191,15 @@ export const updateFinanciamento = [
 ];
 
 
-// Função para buscar financiamento por ID da loja do usuário
+// Função para buscar financiamento por ID da empresa do usuário
 export const getFinanciamentoById = [
   //checkPermission('Financiamento', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idFinanciamento } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca o financiamento pelo ID, garantindo que o cliente esteja associado à loja do usuário
+      // Busca o financiamento pelo ID, garantindo que o cliente esteja associado à empresa do usuário
       const financiamento = await Financiamento.findOne({
         where: { idFinanciamento }, // Busca o financiamento pelo ID
         include: [
@@ -208,16 +208,16 @@ export const getFinanciamentoById = [
             as: 'cliente', // Alias usado no relacionamento
             include: [
               {
-                model: Loja,
-                as: 'loja', // Alias usado no relacionamento
-                where: { idLoja: idLoja }, // Filtra pela loja do cliente
+                model: Empresa,
+                as: 'empresa', // Alias usado no relacionamento
+                where: { idEmpresa: idEmpresa }, // Filtra pela empresa do cliente
               },
             ],
           },
         ],
       });
 
-      // Verifica se o financiamento foi encontrado e se o cliente pertence à loja do usuário
+      // Verifica se o financiamento foi encontrado e se o cliente pertence à empresa do usuário
       if (!financiamento || financiamento.dataValues.cliente === null) {
         res.status(404).json({ message: 'Financiamento não encontrado ou você não tem permissão para visualizá-lo.' });
         return;

@@ -9,17 +9,17 @@ import {
   //getUsuarioByCpfCnpj, 
   //getUsuarioByEmail, 
   getUsuarioById,
-  //getUsuariosByLoja,
-  //getUsuariosMyLoja 
+  //getUsuariosByEmpresa,
+  //getUsuariosMyEmpresa 
 } from '../controllers/usuariosController';
 
 import { 
-  getLojas, 
-  createLoja, 
-  updateLoja, 
-  deleteLoja, 
-  getLojaById 
-} from '../controllers/lojasController'; // Importando as funções de lojas
+  getEmpresas, 
+  createEmpresa, 
+  updateEmpresa, 
+  deleteEmpresa, 
+  getEmpresaById 
+} from '../controllers/emprasasController'; // Importando as funções de empresas
 
 import { 
   getVeiculosFilter, 
@@ -118,13 +118,13 @@ const router = express.Router();
 router.post('/login', login);
 
 // Rotas de usuários
-//router.get('/usuarios', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosMyLoja); // Lista todos usuário de todas as lojas
-router.get('/usuarios/todos', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarios); // Lista todos usuário de todas as lojas
+//router.get('/usuarios', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosMyEmpresa); // Lista todos usuário de todas as empresas
+router.get('/usuarios/todos', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarios); // Lista todos usuário de todas as empresas
 router.post('/usuarios', authMiddleware, checkPermission('Usuarios', 'criar'), createUsuario); // Verificando permissão 'criar' para a tabela 'Usuarios'
 //router.get('/usuarios/cpfcnpj/:CPF_CNPJ', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioByCpfCnpj); // Verificando permissão 'ler' para a tabela 'Usuarios'
 //router.get('/usuarios/email/:Email', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioByEmail); // Verificando permissão 'ler' para a tabela 'Usuarios'
 router.get('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuarioById); // Verificando permissão 'ler' para a tabela 'Usuarios'
-//router.get('/usuarios/loja/:Lojas_idLoja', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosByLoja); // Verificando permissão 'ler' para a tabela 'Usuarios'
+//router.get('/usuarios/empresa/:Empresas_idEmpresa', authMiddleware, checkPermission('Usuarios', 'ler'), getUsuariosByEmpresa); // Verificando permissão 'ler' para a tabela 'Usuarios'
 router.put('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', 'atualizar'), updateUsuario); // Verificando permissão 'atualizar' para a tabela 'Usuarios'
 router.delete('/usuarios/:idUsuario', authMiddleware, checkPermission('Usuarios', 'deletar'), deleteUsuario); // Verificando permissão 'deletar' para a tabela 'Usuarios'
 
@@ -209,12 +209,12 @@ router.get('/vistorias/:idVistoria', authMiddleware, checkPermission('Vistoria',
 router.put('/vistorias/:idVistoria', authMiddleware, checkPermission('Vistoria', 'atualizar'), updateVistoria); // Verificando permissão 'atualizar' para a tabela 'Vistorias'
 router.delete('/vistorias/:idVistoria', authMiddleware, checkPermission('Vistoria', 'deletar'), deleteVistoria); // Verificando permissão 'deletar' para a tabela 'Vistorias'
 
-// Rotas de lojas
-router.get('/lojas', authMiddleware, checkPermission('Loja', 'ler'), getLojas); // Verificando permissão 'ler' para a tabela 'Lojas'
-router.post('/lojas', authMiddleware, checkPermission('Loja', 'criar'), createLoja); // Verificando permissão 'criar' para a tabela 'Lojas'
-router.get('/lojas/:idLoja', authMiddleware, checkPermission('Loja', 'ler'), getLojaById); // Verificando permissão 'ler' para a tabela 'Lojas'
-router.put('/lojas/:idLoja', authMiddleware, checkPermission('Loja', 'atualizar'), updateLoja); // Verificando permissão 'atualizar' para a tabela 'Lojas'
-router.delete('/lojas/:idLoja', authMiddleware, checkPermission('Loja', 'deletar'), deleteLoja); // Verificando permissão 'deletar' para a tabela 'Lojas'
+// Rotas de empresas
+router.get('/empresas', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresas); // Verificando permissão 'ler' para a tabela 'Empresas'
+router.post('/empresas', authMiddleware, checkPermission('Empresa', 'criar'), createEmpresa); // Verificando permissão 'criar' para a tabela 'Empresas'
+router.get('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresaById); // Verificando permissão 'ler' para a tabela 'Empresas'
+router.put('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'atualizar'), updateEmpresa); // Verificando permissão 'atualizar' para a tabela 'Empresas'
+router.delete('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'deletar'), deleteEmpresa); // Verificando permissão 'deletar' para a tabela 'Empresas'
 
 // Rotas de tipo de manutenção
 router.get('/tipoManutencao', authMiddleware, checkPermission('TipoManutencao', 'ler'), getTipoManutencao); // Verificando permissão 'ler' para a tabela 'TipoManutencao'

@@ -6,21 +6,21 @@ import { Usuario } from '../models/usuarios'; // Modelo de Usuário
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
-// Função para buscar todos os usuários da loja do usuário
+// Função para buscar todos os usuários da empresa do usuário
 export const getUsuarios = [
   //checkPermission('Usuarios', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const usuarios = await Usuario.findAll({ where: { Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const usuarios = await Usuario.findAll({ where: { Empresas_idEmpresa: idEmpresa } });
 
       if (usuarios.length === 0) {
-        res.status(500).json({ message: 'Não há usuários cadastrados na sua loja.' });
+        res.status(500).json({ message: 'Não há usuários cadastrados na sua empresa.' });
       } else {
         res.json(usuarios);
       }
@@ -31,7 +31,7 @@ export const getUsuarios = [
   },
 ];
 
-// Função para criar um novo usuário na loja do usuário
+// Função para criar um novo usuário na empresa do usuário
 export const createUsuario = [
   //checkPermission('Usuarios', 'criar'), // Verifica permissão de criação
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -56,15 +56,15 @@ export const createUsuario = [
       } = req.body;
 
       // Verificar se o CPF/CNPJ já existe
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const usuarioExistente = await Usuario.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const usuarioExistente = await Usuario.findOne({ where: { CPF_CNPJ, Empresas_idEmpresa: idEmpresa } });
       if (usuarioExistente) {
-        res.status(400).json({ message: "CPF/CNPJ já está em uso nesta loja." });
+        res.status(400).json({ message: "CPF/CNPJ já está em uso nesta empresa." });
         return;
       }
 
       // Criar o novo usuário
-      const Lojas_idLoja = idLoja;
+      const Empresas_idEmpresa = idEmpresa;
       const usuario = await Usuario.create({
         Nome,
         CPF_CNPJ,
@@ -82,7 +82,7 @@ export const createUsuario = [
         Email,
         Senha,
         Grupo,
-        Lojas_idLoja,
+        Empresas_idEmpresa,
         Status: true, // Status padrão como ativo
       });
 
@@ -93,16 +93,16 @@ export const createUsuario = [
   },
 ];
 
-// Função para excluir um usuário da loja do usuário
+// Função para excluir um usuário da empresa do usuário
 export const deleteUsuario = [
   //checkPermission('Usuarios', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idUsuario } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const usuario = await Usuario.findOne({ where: { idUsuario, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const usuario = await Usuario.findOne({ where: { idUsuario, Empresas_idEmpresa: idEmpresa } });
       if (!usuario) {
-        res.status(404).json({ message: 'Usuário não encontrado nesta loja' });
+        res.status(404).json({ message: 'Usuário não encontrado nesta empresa' });
         return;
       }
 
@@ -114,7 +114,7 @@ export const deleteUsuario = [
   },
 ];
 
-// Função para atualizar os dados de um usuário na loja do usuário
+// Função para atualizar os dados de um usuário na empresa do usuário
 export const updateUsuario = [
   //checkPermission('Usuarios', 'atualizar'), // Verifica permissão de atualizar
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -140,10 +140,10 @@ export const updateUsuario = [
         Data_Demissao,
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const usuario = await Usuario.findOne({ where: { idUsuario, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const usuario = await Usuario.findOne({ where: { idUsuario, Empresas_idEmpresa: idEmpresa } });
       if (!usuario) {
-        res.status(404).json({ message: 'Usuário não encontrado nesta loja' });
+        res.status(404).json({ message: 'Usuário não encontrado nesta empresa' });
         return;
       }
 
@@ -173,18 +173,18 @@ export const updateUsuario = [
   },
 ];
 
-// Função para buscar usuário por CPF/CNPJ na loja do usuário
+// Função para buscar usuário por CPF/CNPJ na empresa do usuário
 export const getUsuarioByCPF_CNPJ = [
   //checkPermission('Usuarios', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { CPF_CNPJ } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const usuario = await Usuario.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
+      const usuario = await Usuario.findOne({ where: { CPF_CNPJ, Empresas_idEmpresa: idEmpresa } });
 
       if (!usuario) {
-        res.status(404).json({ message: "Usuário não encontrado com este CPF/CNPJ nesta loja." });
+        res.status(404).json({ message: "Usuário não encontrado com este CPF/CNPJ nesta empresa." });
         return;
       }
 
@@ -195,18 +195,18 @@ export const getUsuarioByCPF_CNPJ = [
   },
 ];
 
-// Função para buscar usuário por ID na loja do usuário
+// Função para buscar usuário por ID na empresa do usuário
 export const getUsuarioById = [
   //checkPermission('Usuarios', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idUsuario } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const usuario = await Usuario.findOne({ where: { idUsuario, Lojas_idLoja: idLoja } });
+      const usuario = await Usuario.findOne({ where: { idUsuario, Empresas_idEmpresa: idEmpresa } });
 
       if (!usuario) {
-        res.status(404).json({ message: "Usuário não encontrado com este ID nesta loja." });
+        res.status(404).json({ message: "Usuário não encontrado com este ID nesta empresa." });
         return;
       }
 

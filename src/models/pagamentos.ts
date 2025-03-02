@@ -2,14 +2,14 @@
 
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../config/database';
-import { Loja } from './lojas';
+import { Empresa } from './Empresas';
 
 export class Pagamento extends Model {
   public idPagamento!: number;
   public Dt_Pagto!: Date | null;
   public Vr_Pagto!: number | null;
   public FormaPagto!: string | null;
-  public Lojas_idLoja!: number;
+  public Empresas_idEmpresa!: number;
   public ContaDebitada!: number | null;
 }
 
@@ -32,12 +32,12 @@ Pagamento.init(
       type: DataTypes.STRING(45),
       allowNull: true,
     },
-    Lojas_idLoja: {
+    Empresas_idEmpresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Loja,
-        key: 'idLoja',
+        model: Empresa,
+        key: 'idEmpresa',
       },
     },
     ContaDebitada: {
@@ -53,12 +53,12 @@ Pagamento.init(
   }
 );
 
-// Relacionamento com a tabela Lojas usando alias
-Pagamento.belongsTo(Loja,
-   { foreignKey: 'Lojas_idLoja',
-     as: 'loja' 
+// Relacionamento com a tabela Empresas usando alias
+Pagamento.belongsTo(Empresa,
+   { foreignKey: 'Empresas_idEmpresa',
+     as: 'empresa' 
    });
-Loja.hasMany(Pagamento,
-   { foreignKey: 'Lojas_idLoja', 
+Empresa.hasMany(Pagamento,
+   { foreignKey: 'Empresas_idEmpresa', 
     as: 'pagamento' 
    });

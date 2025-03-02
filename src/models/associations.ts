@@ -1,15 +1,15 @@
 // src/models/associations.ts
 
 import { Estoque } from "./estoques";
-import { Loja } from "./lojas";
+import { Empresa } from "./Empresas";
 
-// Definir as associações entre Estoque e Loja
-Loja.hasMany(Estoque, {
-  foreignKey: "Lojas_idLoja",
+// Definir as associações entre Estoque e Empresa
+Empresa.hasMany(Estoque, {
+  foreignKey: "Empresas_idEmpresa",
   as: "estoques",
 });
 
-Estoque.belongsTo(Loja, {
-  foreignKey: "Lojas_idLoja",
-  as: "loja",
+Estoque.belongsTo(Empresa, {
+  foreignKey: "Empresas_idEmpresa",
+  as: "empresa",
 });

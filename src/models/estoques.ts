@@ -2,7 +2,7 @@
 
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import { Loja } from "./lojas"; // Import do model Lojas
+import { Empresa } from "./Empresas"; // Import do model Empresas
 
 export class Estoque extends Model {
   public idEstoque!: number;
@@ -10,7 +10,7 @@ export class Estoque extends Model {
   public AreaCoberta!: number;
   public Data_Abertura!: Date | null;
   public Status!: string | null;
-  public Lojas_idLoja!: number;
+  public Empresas_idEmpresa!: number;
   public Local!: string | null;
   public Nome!: string | null;
   public createdAt!: Date;
@@ -41,12 +41,12 @@ Estoque.init(
       allowNull: true,
     },
     
-    Lojas_idLoja: {
+    Empresas_idEmpresa: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Loja, 
-        key: 'idLoja',
+        model: Empresa, 
+        key: 'idEmpresa',
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',

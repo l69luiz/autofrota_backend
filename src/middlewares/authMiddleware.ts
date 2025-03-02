@@ -7,14 +7,14 @@ import { Usuario } from '../models/usuarios';
 // Definindo a estrutura do payload do JWT
 interface JwtPayload {
   idUserToken: number;
-  idlojaToken: number;
+  idempresaToken: number;
   permissoesToken: string[]; // Array de permissões do usuário
 }
 
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
@@ -35,7 +35,7 @@ const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction): 
     // Atribuir os dados do token ao campo req.user
     req.user = {
       idUserToken: decoded.idUserToken,
-      idlojaToken: decoded.idlojaToken,
+      idempresaToken: decoded.idempresaToken,
       permissoesToken: decoded.permissoesToken,
     };
 
@@ -50,9 +50,9 @@ const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction): 
 const checkPermission = (nomeTabela: string, acao: string) => {
   return async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
     const usuario = req.user;
-    const idLojaToken = usuario?.idlojaToken;
+    const idEmpresaToken = usuario?.idempresaToken;
     const idUsuarioToken = usuario?.idUserToken;
-    const idLojaURL = Number(req.params.idLoja);
+    const idEmpresaURL = Number(req.params.idEmpresa);
     const idUsuarioURL = Number(req.params.idUsuario);
 
     if (!usuario) {
@@ -75,18 +75,18 @@ const checkPermission = (nomeTabela: string, acao: string) => {
     // Verificar se o usuário está acessando informações de outro usuário
     if (idUsuarioURL && idUsuarioToken !== idUsuarioURL) {
       const dadosUserURL = await Usuario.findOne({ where: { idUsuario: idUsuarioURL } });
-      if (!dadosUserURL || idLojaToken !== dadosUserURL.Lojas_idLoja) {
+      if (!dadosUserURL || idEmpresaToken !== dadosUserURL.Empresas_idEmpresa) {
         if (usuarioNoBanco.Grupo !== 'Administrador') {
-          res.status(403).json({ message: 'Usuário não pertence a sua loja.' });
+          res.status(403).json({ message: 'Usuário não pertence a sua empresa.' });
           return;
         }
       }
     }
 
-    // Verificar se a loja do token corresponde à loja da URL
-    if (idLojaURL && usuarioNoBanco.Lojas_idLoja !== idLojaURL) {
+    // Verificar se a empresa do token corresponde à empresa da URL
+    if (idEmpresaURL && usuarioNoBanco.Empresas_idEmpresa !== idEmpresaURL) {
       if (usuarioNoBanco.Grupo !== 'Administrador') {
-        res.status(403).json({ message: 'Verifique a loja a qual o usuário pertence.' });
+        res.status(403).json({ message: 'Verifique a empresa a qual o usuário pertence.' });
         return;
       }
     }

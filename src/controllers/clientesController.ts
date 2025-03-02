@@ -6,16 +6,16 @@ import { Op } from 'sequelize';
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
-// Função para buscar todos os clientes da loja com filtros
+// Função para buscar todos os clientes da empresa com filtros
 export const getClientesFilter = async (req: CustomRequest, res: Response): Promise<void> => {
   try {
-    // Pega o ID da loja do usuário autenticado
-    const idLoja = req.user?.idlojaToken;
+    // Pega o ID da empresa do usuário autenticado
+    const idEmpresa = req.user?.idempresaToken;
 
     // Pega os parâmetros da URL (para filtros e paginação)
     const { _page, _limit, nome_like } = req.query;
@@ -27,7 +27,7 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
 
     // Constrói a condição de filtro para o nome completo, se fornecido
     const whereCondition = {
-      Lojas_idLoja: idLoja, // Filtro pela loja do usuário logado
+      Empresas_idEmpresa: idEmpresa, // Filtro pela empresa do usuário logado
       ...(nome_like && {
         Nome: {
           [Op.like]: `%${nome_like}%`,
@@ -44,7 +44,7 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
 
     // Verifica se há clientes e envia a resposta apropriada
     if (clientes.rows.length === 0) {
-      res.status(404).json({ message: 'Não há clientes cadastrados na sua loja.' });
+      res.status(404).json({ message: 'Não há clientes cadastrados na sua empresa.' });
     } else {
       // Envia a lista de clientes com a contagem total, paginação e dados
       res.status(200).json({
@@ -60,7 +60,7 @@ export const getClientesFilter = async (req: CustomRequest, res: Response): Prom
   }
 };
 
-// Função para criar um novo cliente na loja do usuário
+// Função para criar um novo cliente na empresa do usuário
 export const createCliente = [
   //checkPermission('Clientes', 'criar'), // Verifica permissão de criação
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -84,26 +84,26 @@ export const createCliente = [
         Sexo,
         Estado_Civil,
         StatusAutoRastrear,
-        StatusLoja
+        StatusEmpresa
 
       } = req.body;
 
       // Verificar se o CPF/CNPJ já existe
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const clienteExistenteCPF_CNPJ = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const clienteExistenteCPF_CNPJ = await Cliente.findOne({ where: { CPF_CNPJ, Empresas_idEmpresa: idEmpresa } });
       if (clienteExistenteCPF_CNPJ) {
-        res.status(400).json({ message: "CPF/CNPJ já está em uso nesta loja." });
+        res.status(400).json({ message: "CPF/CNPJ já está em uso nesta empresa." });
         return;
       }
       // Verificar se o Email já existe
-      const clienteExistenteEmail = await Cliente.findOne({ where: { Email, Lojas_idLoja: idLoja } });
+      const clienteExistenteEmail = await Cliente.findOne({ where: { Email, Empresas_idEmpresa: idEmpresa } });
       if (clienteExistenteEmail) {
-        res.status(400).json({ message: "Email já está em uso nesta loja." });
+        res.status(400).json({ message: "Email já está em uso nesta empresa." });
         return;
       }
 
       // Criar o novo cliente
-      const Lojas_idLoja = idLoja;
+      const Empresas_idEmpresa = idEmpresa;
       const cliente = await Cliente.create({
         Nome,
         CPF_CNPJ,
@@ -122,9 +122,9 @@ export const createCliente = [
         Data_Nascimento,
         Sexo,
         Estado_Civil,
-        Lojas_idLoja,
+        Empresas_idEmpresa,
         StatusAutoRastrear,
-        StatusLoja
+        StatusEmpresa
       });
 
       res.status(201).json(cliente);
@@ -134,15 +134,15 @@ export const createCliente = [
   },
 ];
 
-// Função para excluir um cliente da loja do usuário
+// Função para excluir um cliente da empresa do usuário
 export const deleteCliente = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idCliente } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-       const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+       const cliente = await Cliente.findOne({ where: { idCliente, Empresas_idEmpresa: idEmpresa } });
       if (!cliente) {
-        res.status(404).json({ message: 'Cliente não encontrado nesta loja' });
+        res.status(404).json({ message: 'Cliente não encontrado nesta empresa' });
         return;
       }
 
@@ -154,7 +154,7 @@ export const deleteCliente = [
   },
 ];
 
-// Função para atualizar os dados de um cliente na loja do usuário
+// Função para atualizar os dados de um cliente na empresa do usuário
 export const updateCliente = [
    async (req: CustomRequest, res: Response): Promise<void> => {
     try {
@@ -179,26 +179,26 @@ export const updateCliente = [
         Estado_Civil,
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const cliente = await Cliente.findOne({ where: { idCliente, Empresas_idEmpresa: idEmpresa } });
       if (!cliente) {
-        res.status(404).json({ message: 'Cliente não encontrado nesta loja' });
+        res.status(404).json({ message: 'Cliente não encontrado nesta empresa' });
         return;
       }
 
     // Verificar se o e-mail foi alterado
     if (Email && Email !== cliente.Email) {
-      // Verificar se o novo e-mail já está em uso em outra conta na mesma loja
+      // Verificar se o novo e-mail já está em uso em outra conta na mesma empresa
       const clienteExistenteEmail = await Cliente.findOne({
         where: {
           Email,
-          Lojas_idLoja: idLoja,
+          Empresas_idEmpresa: idEmpresa,
           idCliente: { [Op.ne]: idCliente }, // Exclui o cliente atual da verificação
         },
       });
 
       if (clienteExistenteEmail) {
-        res.status(400).json({ message: "O novo e-mail já está em uso nesta loja." });
+        res.status(400).json({ message: "O novo e-mail já está em uso nesta empresa." });
         return;
       }
 
@@ -208,17 +208,17 @@ export const updateCliente = [
 
     // Verificar se o CPF_CNPJ foi alterado
     if (CPF_CNPJ && CPF_CNPJ !== cliente.CPF_CNPJ) {
-      // Verificar se o novo CPF_CNPJ já está em uso em outra conta na mesma loja
+      // Verificar se o novo CPF_CNPJ já está em uso em outra conta na mesma empresa
       const clienteExistenteCPF_CNPJ = await Cliente.findOne({
         where: {
           CPF_CNPJ,
-          Lojas_idLoja: idLoja,
+          Empresas_idEmpresa: idEmpresa,
           idCliente: { [Op.ne]: idCliente }, // Exclui o cliente atual da verificação
         },
       });
 
       if (clienteExistenteCPF_CNPJ) {
-        res.status(400).json({ message: "O novo CPF ou CNPJ já está em uso nesta loja." });
+        res.status(400).json({ message: "O novo CPF ou CNPJ já está em uso nesta empresa." });
         return;
       }
 
@@ -249,15 +249,15 @@ export const updateCliente = [
   },
 ];
 
-// Função para buscar cliente por CPF/CNPJ na loja do usuário
+// Função para buscar cliente por CPF/CNPJ na empresa do usuário
 export const getClienteByCPF_CNPJ = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { CPF_CNPJ } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const cliente = await Cliente.findOne({ where: { CPF_CNPJ, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const cliente = await Cliente.findOne({ where: { CPF_CNPJ, Empresas_idEmpresa: idEmpresa } });
       if (!cliente) {
-        res.status(404).json({ message: "Cliente não encontrado com este CPF/CNPJ nesta loja." });
+        res.status(404).json({ message: "Cliente não encontrado com este CPF/CNPJ nesta empresa." });
         return;
       }
         res.status(200).json(cliente);
@@ -267,15 +267,15 @@ export const getClienteByCPF_CNPJ = [
   },
 ];
 
-// Função para buscar cliente por ID na loja do usuário
+// Função para buscar cliente por ID na empresa do usuário
 export const getClienteById = [
    async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idCliente } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const cliente = await Cliente.findOne({ where: { idCliente, Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const cliente = await Cliente.findOne({ where: { idCliente, Empresas_idEmpresa: idEmpresa } });
       if (!cliente) {
-        res.status(404).json({ message: "Cliente não encontrado com este ID nesta loja." });
+        res.status(404).json({ message: "Cliente não encontrado com este ID nesta empresa." });
         return;
       }
 

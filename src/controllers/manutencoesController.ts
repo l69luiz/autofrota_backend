@@ -3,12 +3,12 @@ import { Manutencao } from '../models/manutencoes'; // Modelo de Manutenção
 import { checkPermission } from '../middlewares/authMiddleware'; // Middleware de permissões
 import { Veiculo } from '../models/veiculos';
 import { Estoque } from '../models/estoques';
-import { Loja } from '../models/lojas';
+import { Empresa } from '../models/Empresas';
 
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
@@ -19,21 +19,21 @@ interface ManutencaoComRelacionamentos extends Manutencao {
     Placa_Veiculo: string;
     estoque?: {
       idEstoque: number;
-      loja?: {
-        idLoja: number;
+      empresa?: {
+        idEmpresa: number;
       };
     };
   };
 }
 
-// Função para buscar todas as manutenções da loja do usuário
+// Função para buscar todas as manutenções da empresa do usuário
 export const getManutencoes = [
   checkPermission('Manutencao', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca manutenções filtrando pela loja associada ao veículo
+      // Busca manutenções filtrando pela empresa associada ao veículo
       const manutencoes = await Manutencao.findAll({
         include: [
           {
@@ -45,9 +45,9 @@ export const getManutencoes = [
                 as: 'estoque', // Alias usado no relacionamento
                 include: [
                   {
-                    model: Loja,
-                    as: 'loja', // Alias usado no relacionamento
-                    where: { idLoja: idLoja }, // Filtra pela loja do estoque
+                    model: Empresa,
+                    as: 'empresa', // Alias usado no relacionamento
+                    where: { idEmpresa: idEmpresa }, // Filtra pela empresa do estoque
                   },
                 ],
               },
@@ -56,11 +56,11 @@ export const getManutencoes = [
         ],
       });
 
-      // Filtra manutenções cujo array de veiculo e loja não seja null
+      // Filtra manutenções cujo array de veiculo e empresa não seja null
       const manutencoesFiltradas = manutencoes.filter((manutencao: any) => manutencao.veiculo.estoque !== null);
 
       if (manutencoesFiltradas.length === 0) {
-        res.status(404).json({ message: 'Não há manutenções cadastradas na sua loja.' });
+        res.status(404).json({ message: 'Não há manutenções cadastradas na sua empresa.' });
       } else {
         res.json(manutencoesFiltradas);
       }
@@ -110,13 +110,13 @@ export const createManutencao = [
   },
 ];
 
-// Função para excluir uma manutenção da loja do usuário
+// Função para excluir uma manutenção da empresa do usuário
 export const deleteManutencao = [
   checkPermission('Manutencao', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idManutencao } = req.params; // ID da manutenção que será excluída
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       // Busca a manutenção, incluindo o veículo e o estoque associado
       const manutencao = await Manutencao.findOne({
@@ -131,9 +131,9 @@ export const deleteManutencao = [
                 as: 'estoque',
                 include: [
                   {
-                    model: Loja,
-                    as: 'loja',
-                    where: { idLoja: idLoja }, // Filtra pela loja do estoque
+                    model: Empresa,
+                    as: 'empresa',
+                    where: { idEmpresa: idEmpresa }, // Filtra pela empresa do estoque
                   },
                 ],
               },
@@ -143,7 +143,7 @@ export const deleteManutencao = [
       }) as ManutencaoComRelacionamentos | null; // Faz o casting para a interface
 
       // Verifique se o retorno da consulta existe e se os relacionamentos estão presentes
-      if (!manutencao || !manutencao.veiculo || !manutencao.veiculo.estoque || !manutencao.veiculo.estoque.loja) {
+      if (!manutencao || !manutencao.veiculo || !manutencao.veiculo.estoque || !manutencao.veiculo.estoque.empresa) {
         res.status(404).json({ message: 'Manutenção não encontra ou você não tem permissão para excluí-la.' });
         return;
       }
@@ -154,7 +154,7 @@ export const deleteManutencao = [
 
       //console.log(`Estoque: ${estoque.idEstoque}, Veículo: ${veiculo.Placa_Veiculo}`);
 
-      // Se a manutenção foi encontrada e pertence à loja, agora você pode excluí-la
+      // Se a manutenção foi encontrada e pertence à empresa, agora você pode excluí-la
       await manutencao.destroy();
 
       res.status(200).json({ message: 'Manutenção excluída com sucesso.' });
@@ -185,7 +185,7 @@ export const updateManutencao = [
         Usuarios_idUsuario,
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       // Busca a manutenção, incluindo o veículo e o estoque associado
       const manutencao = await Manutencao.findOne({
@@ -200,9 +200,9 @@ export const updateManutencao = [
                 as: 'estoque',
                 include: [
                   {
-                    model: Loja,
-                    as: 'loja',
-                    where: { idLoja: idLoja }, // Filtra pela loja do estoque
+                    model: Empresa,
+                    as: 'empresa',
+                    where: { idEmpresa: idEmpresa }, // Filtra pela empresa do estoque
                   },
                 ],
               },
@@ -213,7 +213,7 @@ export const updateManutencao = [
 
 
        // Verifique se o retorno da consulta existe e se os relacionamentos estão presentes
-       if (!manutencao || !manutencao.veiculo || !manutencao.veiculo.estoque || !manutencao.veiculo.estoque.loja) {
+       if (!manutencao || !manutencao.veiculo || !manutencao.veiculo.estoque || !manutencao.veiculo.estoque.empresa) {
         res.status(404).json({ message: 'Manutenção não encontra ou você não tem permissão para atualizá-la.' });
         return;
       }
@@ -239,13 +239,13 @@ export const updateManutencao = [
   },
 ];
 
-// Função para buscar manutenção por ID da loja do usuário
+// Função para buscar manutenção por ID da empresa do usuário
 export const getManutencaoById = [
   //checkPermission('Manutencao', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idManutencao } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       // Busca a manutenção, incluindo o veículo e o estoque associado
       const manutencao = await Manutencao.findOne({
@@ -260,9 +260,9 @@ export const getManutencaoById = [
                 as: 'estoque',
                 include: [
                   {
-                    model: Loja,
-                    as: 'loja',
-                    where: { idLoja: idLoja }, // Filtra pela loja do estoque
+                    model: Empresa,
+                    as: 'empresa',
+                    where: { idEmpresa: idEmpresa }, // Filtra pela empresa do estoque
                   },
                 ],
               },
@@ -273,7 +273,7 @@ export const getManutencaoById = [
 
 
        // Verifique se o retorno da consulta existe e se os relacionamentos estão presentes
-       if (!manutencao || !manutencao.veiculo || !manutencao.veiculo.estoque || !manutencao.veiculo.estoque.loja) {
+       if (!manutencao || !manutencao.veiculo || !manutencao.veiculo.estoque || !manutencao.veiculo.estoque.empresa) {
         res.status(404).json({ message: 'Manutenção não encontra ou você não tem permissão para vizualizá-la.' });
         return;
       }

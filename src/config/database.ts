@@ -1,7 +1,7 @@
 // src/config/database.ts
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
-import { Loja } from "../models/lojas";  // Importando os modelos
+import { Empresa } from "../models/Empresas";  // Importando os modelos
 //import { Estoque } from "../models/estoques";  // Importando os modelos
 
 dotenv.config();

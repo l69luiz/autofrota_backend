@@ -1,25 +1,25 @@
 import { Request, Response } from 'express';
 import { Permissoes } from '../models/permissoes'; // Modelo de Permissões
 import { Usuario } from '../models/usuarios'; // Modelo de Usuario
-import { Loja } from '../models/lojas'; // Modelo de Loja
+import { Empresa } from '../models/Empresas'; // Modelo de Empresa
 
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
-// Função para buscar todas as permissões da loja do usuário
+// Função para buscar todas as permissões da empresa do usuário
 export const getPermissoes = [
   // checkPermission('Permissoes', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
       const idUsuario = req.user?.idUserToken; // ID do usuário logado
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca permissões filtrando pelo usuário logado e pela loja associada ao usuário
+      // Busca permissões filtrando pelo usuário logado e pela empresa associada ao usuário
       const permissoes = await Permissoes.findAll({
         where: { Usuarios_idUsuario: idUsuario },
         include: [
@@ -29,15 +29,15 @@ export const getPermissoes = [
             where: { idUsuario: idUsuario },
           },
           {
-            model: Loja,
-            as: 'loja',
-            where: { idLoja: idLoja }, // Filtra pela loja associada ao usuário
+            model: Empresa,
+            as: 'empresa',
+            where: { idEmpresa: idEmpresa }, // Filtra pela empresa associada ao usuário
           },
         ],
       });
 
       if (permissoes.length === 0) {
-        res.status(404).json({ message: 'Não há permissões cadastradas para o usuário nesta loja.' });
+        res.status(404).json({ message: 'Não há permissões cadastradas para o usuário nesta empresa.' });
       } else {
         res.json(permissoes);
       }
@@ -71,29 +71,29 @@ export const createPermissao = [
   },
 ];
 
-// Função para excluir uma permissão da loja do usuário
+// Função para excluir uma permissão da empresa do usuário
 export const deletePermissao = [
   // checkPermission('Permissoes', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idPermissoes } = req.params; // ID da permissão que será excluída
       const idUsuario = req.user?.idUserToken; // ID do usuário logado
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca a permissão associada ao usuário e à loja
+      // Busca a permissão associada ao usuário e à empresa
       const permissao = await Permissoes.findOne({
         where: { idPermissoes, Usuarios_idUsuario: idUsuario },
         include: [
           {
-            model: Loja,
-            as: 'loja',
-            where: { idLoja: idLoja }, // Filtra pela loja associada ao usuário
+            model: Empresa,
+            as: 'empresa',
+            where: { idEmpresa: idEmpresa }, // Filtra pela empresa associada ao usuário
           },
         ],
       });
 
       if (!permissao) {
-        res.status(404).json({ message: 'Permissão não encontrada ou você não tem permissão para excluí-la nesta loja.' });
+        res.status(404).json({ message: 'Permissão não encontrada ou você não tem permissão para excluí-la nesta empresa.' });
         return;
       }
 
@@ -106,7 +106,7 @@ export const deletePermissao = [
   },
 ];
 
-// Função para atualizar uma permissão da loja do usuário
+// Função para atualizar uma permissão da empresa do usuário
 export const updatePermissao = [
   // checkPermission('Permissoes', 'atualizar'), // Verifica permissão de atualizar
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -114,22 +114,22 @@ export const updatePermissao = [
       const { idPermissoes } = req.params;
       const { NomeTabela, ler, atualizar, criar, deletar } = req.body;
       const idUsuario = req.user?.idUserToken; // ID do usuário logado
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca a permissão associada ao usuário e à loja
+      // Busca a permissão associada ao usuário e à empresa
       const permissao = await Permissoes.findOne({
         where: { idPermissoes, Usuarios_idUsuario: idUsuario },
         include: [
           {
-            model: Loja,
-            as: 'loja',
-            where: { idLoja: idLoja }, // Filtra pela loja associada ao usuário
+            model: Empresa,
+            as: 'empresa',
+            where: { idEmpresa: idEmpresa }, // Filtra pela empresa associada ao usuário
           },
         ],
       });
 
       if (!permissao) {
-        res.status(404).json({ message: 'Permissão não encontrada ou você não tem permissão para atualizá-la nesta loja.' });
+        res.status(404).json({ message: 'Permissão não encontrada ou você não tem permissão para atualizá-la nesta empresa.' });
         return;
       }
 
@@ -150,17 +150,17 @@ export const updatePermissao = [
 ];
 
 
-// Função para buscar pagamento por ID na loja do usuário
+// Função para buscar pagamento por ID na empresa do usuário
 export const getPermissaoById = [
   //checkPermission('Pagamento', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idPermissao } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const permissao = await Permissoes.findOne({ where: { idPermissao, Lojas_idLoja: idLoja } });
+      const permissao = await Permissoes.findOne({ where: { idPermissao, Empresas_idEmpresa: idEmpresa } });
       if (!permissao) {
-        res.status(404).json({ message: 'Permissão não encontrado nesta loja' });
+        res.status(404).json({ message: 'Permissão não encontrado nesta empresa' });
         return;
       }
 

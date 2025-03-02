@@ -54,7 +54,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign(
       { 
         idUserToken: usuario.idUsuario, 
-        idlojaToken: usuario.Lojas_idLoja, 
+        idempresaToken: usuario.Empresas_idEmpresa, 
         permissoesToken: permissoesPorTabela // Passar as permissões agrupadas por tabela
       },
       process.env.JWT_SECRET!, 

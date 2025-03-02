@@ -7,19 +7,19 @@ import { Op } from 'sequelize';
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
 
-// Função para buscar estoques da loja do usuário com filtros e paginação
+// Função para buscar estoques da empresa do usuário com filtros e paginação
 export const getEstoquesFilter = [
   checkPermission('Estoque', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      // Pega o ID da loja do usuário autenticado
-      const idLoja = req.user?.idlojaToken;
+      // Pega o ID da empresa do usuário autenticado
+      const idEmpresa = req.user?.idempresaToken;
 
       // Pega os parâmetros da URL (para filtros e paginação)
       const { _page, _limit, nome_like } = req.query;
@@ -31,7 +31,7 @@ export const getEstoquesFilter = [
 
       // Constrói a condição de filtro para o nome, se fornecido
       const whereCondition = {
-        Lojas_idLoja: idLoja, // Filtro pela loja do usuário logado
+        Empresas_idEmpresa: idEmpresa, // Filtro pela empresa do usuário logado
         ...(nome_like && {
           Nome: {
             [Op.like]: `%${nome_like}%`, // Filtro por nome (case-insensitive)
@@ -48,7 +48,7 @@ export const getEstoquesFilter = [
 
       // Verifica se há estoques e envia a resposta apropriada
       if (estoques.rows.length === 0) {
-        res.status(404).json({ message: 'Não há estoques cadastrados na sua loja.' });
+        res.status(404).json({ message: 'Não há estoques cadastrados na sua empresa.' });
       } else {
         // Envia a lista de estoques com a contagem total, paginação e dados
         res.status(200).json({
@@ -67,16 +67,16 @@ export const getEstoquesFilter = [
 
 
 
-// Função para buscar todos os estoques da loja do usuário
+// Função para buscar todos os estoques da empresa do usuário
 export const getEstoques = [
   checkPermission('Estoque', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const estoques = await Estoque.findAll({ where: { Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const estoques = await Estoque.findAll({ where: { Empresas_idEmpresa: idEmpresa } });
 
       if (estoques.length === 0) {
-        res.status(404).json({ message: 'Não há estoques cadastrados na sua loja.' });
+        res.status(404).json({ message: 'Não há estoques cadastrados na sua empresa.' });
       } else {
         res.json(estoques);
       }
@@ -86,13 +86,13 @@ export const getEstoques = [
   },
 ];
 
-// Função para criar um novo estoque na loja do usuário
+// Função para criar um novo estoque na empresa do usuário
 export const createEstoque = [
   checkPermission('Estoque', 'criar'), // Verifica permissão de criação
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { AreaTotal, AreaCoberta, Data_Abertura, Status, Local, Nome } = req.body;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       // Criar o novo estoque
       const estoque = await Estoque.create({
@@ -100,7 +100,7 @@ export const createEstoque = [
         AreaCoberta,
         Data_Abertura,
         Status,
-        Lojas_idLoja: idLoja, // Atribui o idLoja do usuário logado
+        Empresas_idEmpresa: idEmpresa, // Atribui o idEmpresa do usuário logado
         Local,
         Nome,
       });
@@ -112,17 +112,17 @@ export const createEstoque = [
   },
 ];
 
-// Função para excluir um estoque da loja do usuário
+// Função para excluir um estoque da empresa do usuário
 export const deleteEstoque = [
   checkPermission('Estoque', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idEstoque } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const estoque = await Estoque.findOne({ where: { idEstoque, Lojas_idLoja: idLoja } });
+      const estoque = await Estoque.findOne({ where: { idEstoque, Empresas_idEmpresa: idEmpresa } });
       if (!estoque) {
-        res.status(404).json({ message: 'Estoque não encontrado nesta loja ou você não tem permissão para excluí-lo.' });
+        res.status(404).json({ message: 'Estoque não encontrado nesta empresa ou você não tem permissão para excluí-lo.' });
         return;
       }
 
@@ -134,18 +134,18 @@ export const deleteEstoque = [
   },
 ];
 
-// Função para atualizar os dados de um estoque na loja do usuário
+// Função para atualizar os dados de um estoque na empresa do usuário
 export const updateEstoque = [
   checkPermission('Estoque', 'atualizar'), // Verifica permissão de atualização
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idEstoque } = req.params;
       const { AreaTotal, AreaCoberta, Data_Abertura, Status, Local, Nome } = req.body;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const estoque = await Estoque.findOne({ where: { idEstoque, Lojas_idLoja: idLoja } });
+      const estoque = await Estoque.findOne({ where: { idEstoque, Empresas_idEmpresa: idEmpresa } });
       if (!estoque) {
-        res.status(404).json({ message: 'Estoque não encontrado nesta loja' });
+        res.status(404).json({ message: 'Estoque não encontrado nesta empresa' });
         return;
       }
 
@@ -164,17 +164,17 @@ export const updateEstoque = [
   },
 ];
 
-// Função para buscar estoque por ID na loja do usuário
+// Função para buscar estoque por ID na empresa do usuário
 export const getEstoqueById = [
   checkPermission('Estoque', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idEstoque } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const estoque = await Estoque.findOne({ where: { idEstoque, Lojas_idLoja: idLoja } });
+      const estoque = await Estoque.findOne({ where: { idEstoque, Empresas_idEmpresa: idEmpresa } });
       if (!estoque) {
-        res.status(404).json({ message: 'Estoque não encontrado nesta loja' });
+        res.status(404).json({ message: 'Estoque não encontrado nesta empresa' });
         return;
       }
 

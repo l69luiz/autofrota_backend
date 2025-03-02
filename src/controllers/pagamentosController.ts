@@ -6,21 +6,21 @@ import { checkPermission } from '../middlewares/authMiddleware'; // Importando o
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
-// Função para buscar todos os pagamentos da loja do usuário
+// Função para buscar todos os pagamentos da empresa do usuário
 export const getPagamentos = [
   checkPermission('Pagamento', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const pagamentos = await Pagamento.findAll({ where: { Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const pagamentos = await Pagamento.findAll({ where: { Empresas_idEmpresa: idEmpresa } });
 
       if (pagamentos.length === 0) {
-        res.status(404).json({ message: 'Não há pagamentos cadastrados na sua loja.' });
+        res.status(404).json({ message: 'Não há pagamentos cadastrados na sua empresa.' });
       } else {
         res.json(pagamentos);
       }
@@ -30,13 +30,13 @@ export const getPagamentos = [
   },
 ];
 
-// Função para criar um novo pagamento na loja do usuário
+// Função para criar um novo pagamento na empresa do usuário
 export const createPagamento = [
   checkPermission('Pagamento', 'criar'), // Verifica permissão de criação
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { Dt_Pagto, Vr_Pagto, FormaPagto, ContaDebitada } = req.body;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       // Criar o novo pagamento
       const pagamento = await Pagamento.create({
@@ -44,7 +44,7 @@ export const createPagamento = [
         Vr_Pagto,
         FormaPagto,
         ContaDebitada,
-        Lojas_idLoja: idLoja, // Atribui o idLoja do usuário logado
+        Empresas_idEmpresa: idEmpresa, // Atribui o idEmpresa do usuário logado
       });
 
       res.status(201).json(pagamento);
@@ -54,17 +54,17 @@ export const createPagamento = [
   },
 ];
 
-// Função para excluir um pagamento da loja do usuário
+// Função para excluir um pagamento da empresa do usuário
 export const deletePagamento = [
   checkPermission('Pagamento', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idPagamento } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const pagamento = await Pagamento.findOne({ where: { idPagamento, Lojas_idLoja: idLoja } });
+      const pagamento = await Pagamento.findOne({ where: { idPagamento, Empresas_idEmpresa: idEmpresa } });
       if (!pagamento) {
-        res.status(404).json({ message: 'Pagamento não encontrado nesta loja ou você não tem permissão para excluí-lo.' });
+        res.status(404).json({ message: 'Pagamento não encontrado nesta empresa ou você não tem permissão para excluí-lo.' });
         return;
       }
 
@@ -76,18 +76,18 @@ export const deletePagamento = [
   },
 ];
 
-// Função para atualizar os dados de um pagamento na loja do usuário
+// Função para atualizar os dados de um pagamento na empresa do usuário
 export const updatePagamento = [
   checkPermission('Pagamento', 'atualizar'), // Verifica permissão de atualização
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idPagamento } = req.params;
       const { Dt_Pagto, Vr_Pagto, FormaPagto, ContaDebitada } = req.body;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const pagamento = await Pagamento.findOne({ where: { idPagamento, Lojas_idLoja: idLoja } });
+      const pagamento = await Pagamento.findOne({ where: { idPagamento, Empresas_idEmpresa: idEmpresa } });
       if (!pagamento) {
-        res.status(404).json({ message: 'Pagamento não encontrado nesta loja' });
+        res.status(404).json({ message: 'Pagamento não encontrado nesta empresa' });
         return;
       }
 
@@ -104,17 +104,17 @@ export const updatePagamento = [
   },
 ];
 
-// Função para buscar pagamento por ID na loja do usuário
+// Função para buscar pagamento por ID na empresa do usuário
 export const getPagamentoById = [
   checkPermission('Pagamento', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idPagamento } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      const pagamento = await Pagamento.findOne({ where: { idPagamento, Lojas_idLoja: idLoja } });
+      const pagamento = await Pagamento.findOne({ where: { idPagamento, Empresas_idEmpresa: idEmpresa } });
       if (!pagamento) {
-        res.status(404).json({ message: 'Pagamento não encontrado nesta loja' });
+        res.status(404).json({ message: 'Pagamento não encontrado nesta empresa' });
         return;
       }
 

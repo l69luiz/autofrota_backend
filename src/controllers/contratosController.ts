@@ -10,21 +10,21 @@ import { Estoque } from '../models/estoques';
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
 
 
-// Função para buscar todos os contratos da loja do usuário
+// Função para buscar todos os contratos da empresa do usuário
 export const getContratos = [
   // checkPermission('Contrato', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response) => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca contratos filtrando pela loja do estoque do veículo
+      // Busca contratos filtrando pela empresa do estoque do veículo
       const contratos = await Contrato.findAll({
         include: [
           {
@@ -34,7 +34,7 @@ export const getContratos = [
               {
                 model: Estoque,
                 as: 'estoque', // Alias usado no relacionamento
-                where: { Lojas_idLoja: idLoja }, // Filtra pela loja
+                where: { Empresas_idEmpresa: idEmpresa }, // Filtra pela empresa
               },
             ],
           },
@@ -45,7 +45,7 @@ export const getContratos = [
       const contratosFiltrados = contratos.filter((contrato: any) => contrato.veiculo !== null);
 
       if (contratosFiltrados.length === 0) {
-        res.status(404).json({ message: 'Não há contratos cadastrados na sua loja.' });
+        res.status(404).json({ message: 'Não há contratos cadastrados na sua empresa.' });
       } else {
         res.json(contratosFiltrados);
       }
@@ -85,7 +85,7 @@ export const createContrato = [
       } = req.body;
 
       // Criar o novo contrato
-      const idUser = req.user?.idUserToken; // ID da loja do usuário logado
+      const idUser = req.user?.idUserToken; // ID da empresa do usuário logado
       const contrato = await Contrato.create({
         Dt_inicial,
         Dt_Final,
@@ -109,9 +109,9 @@ export const deleteContrato = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idContrato } = req.params; // ID do contrato que será excluído
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca o contrato apenas se o usuário relacionado pertencer à loja do token
+      // Busca o contrato apenas se o usuário relacionado pertencer à empresa do token
       const contrato = await Contrato.findOne({
         where: { idContrato }, // Busca o contrato pelo ID
         include: [
@@ -122,7 +122,7 @@ export const deleteContrato = [
               {
                 model: Estoque,
                 as: 'estoque', // Alias usado no relacionamento
-                where: { Lojas_idLoja: idLoja }, // Filtra pela loja
+                where: { Empresas_idEmpresa: idEmpresa }, // Filtra pela empresa
               },
             ],
           },
@@ -161,9 +161,9 @@ export const updateContrato = [
         Usuarios_idUsuario,
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca o contrato se o usuário relacionado pertencer à loja do token
+      // Busca o contrato se o usuário relacionado pertencer à empresa do token
       const contrato = await Contrato.findOne({
         where: { idContrato }, // Busca o contrato pelo ID
         include: [
@@ -174,7 +174,7 @@ export const updateContrato = [
               {
                 model: Estoque,
                 as: 'estoque', // Alias usado no relacionamento
-                where: { Lojas_idLoja: idLoja }, // Filtra pela loja
+                where: { Empresas_idEmpresa: idEmpresa }, // Filtra pela empresa
               },
             ],
           },
@@ -210,9 +210,9 @@ export const getContratoById = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idContrato } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
-      // Busca o contrato pelo ID, garantindo que ele pertença à loja do usuário
+      // Busca o contrato pelo ID, garantindo que ele pertença à empresa do usuário
       const contrato = await Contrato.findOne({
         where: { idContrato }, // Busca o contrato pelo ID
         include: [
@@ -223,7 +223,7 @@ export const getContratoById = [
               {
                 model: Estoque,
                 as: 'estoque', // Alias usado no relacionamento
-                where: { Lojas_idLoja: idLoja }, // Filtra pela loja
+                where: { Empresas_idEmpresa: idEmpresa }, // Filtra pela empresa
               },
             ],
           },

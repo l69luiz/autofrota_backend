@@ -7,18 +7,18 @@ import { Op } from 'sequelize';
 interface CustomRequest extends Request {
   user?: {
     idUserToken: number;
-    idlojaToken: number;
+    idempresaToken: number;
     permissoesToken: string[]; // Array de permissões do usuário
   };
 }
 
-// Função para buscar contas bancárias da loja do usuário com filtros e paginação
+// Função para buscar contas bancárias da empresa do usuário com filtros e paginação
 export const getContasBancariasFilter = [
   checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      // Pega o ID da loja do usuário autenticado
-      const idLoja = req.user?.idlojaToken;
+      // Pega o ID da empresa do usuário autenticado
+      const idEmpresa = req.user?.idempresaToken;
 
       // Pega os parâmetros da URL (para filtros e paginação)
       const { _page, _limit, nome_like } = req.query;
@@ -30,7 +30,7 @@ export const getContasBancariasFilter = [
 
       // Constrói a condição de filtro para o nome, se fornecido
       const whereCondition = {
-        Lojas_idLoja: idLoja, // Filtro pela loja do usuário logado
+        Empresas_idEmpresa: idEmpresa, // Filtro pela empresa do usuário logado
         ...(nome_like && {
           NomeBanco: {
             [Op.like]: `%${nome_like}%`, // Filtro por nome do banco (case-insensitive)
@@ -47,7 +47,7 @@ export const getContasBancariasFilter = [
 
       // Verifica se há contas bancárias e envia a resposta apropriada
       if (contasBancarias.rows.length === 0) {
-        res.status(404).json({ message: 'Não há contas bancárias cadastradas na sua loja.' });
+        res.status(404).json({ message: 'Não há contas bancárias cadastradas na sua empresa.' });
       } else {
         // Envia a lista de contas bancárias com a contagem total, paginação e dados
         res.status(200).json({
@@ -64,16 +64,16 @@ export const getContasBancariasFilter = [
   },
 ];
 
-// Função para buscar todas as contas bancárias da loja do usuário
+// Função para buscar todas as contas bancárias da empresa do usuário
 export const getContasBancarias = [
   checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
-      const contasBancarias = await ContaBancaria.findAll({ where: { Lojas_idLoja: idLoja } });
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
+      const contasBancarias = await ContaBancaria.findAll({ where: { Empresas_idEmpresa: idEmpresa } });
 
       if (contasBancarias.length === 0) {
-        res.status(404).json({ message: 'Não há contas bancárias cadastradas na sua loja.' });
+        res.status(404).json({ message: 'Não há contas bancárias cadastradas na sua empresa.' });
       } else {
         res.status(200).json(contasBancarias);
       }
@@ -83,7 +83,7 @@ export const getContasBancarias = [
   },
 ];
 
-// Função para criar uma nova conta bancária na loja do usuário
+// Função para criar uma nova conta bancária na empresa do usuário
 export const createContaBancaria = [
   checkPermission('ContaBancaria', 'criar'), // Verifica permissão de criação
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -102,7 +102,7 @@ export const createContaBancaria = [
         DataAbertura,
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       // Cria a nova conta bancária
       const contaBancaria = await ContaBancaria.create({
@@ -117,7 +117,7 @@ export const createContaBancaria = [
         CPF_CNPJ_Titular,
         StatusConta,
         DataAbertura,
-        Lojas_idLoja: idLoja, // Atribui o idLoja do usuário logado
+        Empresas_idEmpresa: idEmpresa, // Atribui o idEmpresa do usuário logado
       });
 
       res.status(201).json(contaBancaria);
@@ -127,21 +127,21 @@ export const createContaBancaria = [
   },
 ];
 
-// Função para excluir uma conta bancária da loja do usuário
+// Função para excluir uma conta bancária da empresa do usuário
 export const deleteContaBancaria = [
   checkPermission('ContaBancaria', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idContasBancarias } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContasBancarias, Lojas_idLoja: idLoja },
+        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
       });
 
       if (!contaBancaria) {
         res.status(404).json({
-          message: 'Conta bancária não encontrada nesta loja ou você não tem permissão para excluí-la.',
+          message: 'Conta bancária não encontrada nesta empresa ou você não tem permissão para excluí-la.',
         });
         return;
       }
@@ -154,7 +154,7 @@ export const deleteContaBancaria = [
   },
 ];
 
-// Função para atualizar os dados de uma conta bancária na loja do usuário
+// Função para atualizar os dados de uma conta bancária na empresa do usuário
 export const updateContaBancaria = [
   checkPermission('ContaBancaria', 'atualizar'), // Verifica permissão de atualização
   async (req: CustomRequest, res: Response): Promise<void> => {
@@ -174,14 +174,14 @@ export const updateContaBancaria = [
         DataAbertura,
       } = req.body;
 
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContasBancarias, Lojas_idLoja: idLoja },
+        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
       });
 
       if (!contaBancaria) {
-        res.status(404).json({ message: 'Conta bancária não encontrada nesta loja' });
+        res.status(404).json({ message: 'Conta bancária não encontrada nesta empresa' });
         return;
       }
 
@@ -208,20 +208,20 @@ export const updateContaBancaria = [
   },
 ];
 
-// Função para buscar uma conta bancária por ID na loja do usuário
+// Função para buscar uma conta bancária por ID na empresa do usuário
 export const getContaBancariaById = [
   checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idContasBancarias } = req.params;
-      const idLoja = req.user?.idlojaToken; // ID da loja do usuário logado
+      const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContasBancarias, Lojas_idLoja: idLoja },
+        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
       });
 
       if (!contaBancaria) {
-        res.status(404).json({ message: 'Conta bancária não encontrada nesta loja' });
+        res.status(404).json({ message: 'Conta bancária não encontrada nesta empresa' });
         return;
       }
 

@@ -1,60 +1,60 @@
-// src/models/lojas.ts
+// src/models/Empresas.ts
 
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
-export class Loja extends Model {
-  public idLoja!: number;
-  public Nome_Loja!: string;
-  public NomeFantasia_Loja!: string;
-  public Endereco_Loja!: string;
-  public Telefone_Loja!: string | null;
-  public Email_Loja!: string | null;
-  public CNPJ_Loja!: string;
-  public CaminhoImgLoja!: string;
+export class Empresa extends Model {
+  public idEmpresa!: number;
+  public Nome_Empresa!: string;
+  public NomeFantasia_Empresa!: string;
+  public Endereco_Empresa!: string;
+  public Telefone_Empresa!: string | null;
+  public Email_Empresa!: string | null;
+  public CNPJ_Empresa!: string;
+  public CaminhoImgEmpresa!: string;
 }
 
-Loja.init(
+Empresa.init(
   {
-    idLoja: {
+    idEmpresa: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    Nome_Loja: {
+    Nome_Empresa: {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    NomeFantasia_Loja: {
+    NomeFantasia_Empresa: {
       type: DataTypes.STRING(120),
       allowNull: false,
     },
-    Endereco_Loja: {
+    Endereco_Empresa: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    Telefone_Loja: {
+    Telefone_Empresa: {
       type: DataTypes.STRING(20), // Ajustando para o tamanho correto
       allowNull: true,
     },
-    Email_Loja: {
+    Email_Empresa: {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
-    CNPJ_Loja: {
+    CNPJ_Empresa: {
       type: DataTypes.STRING(20), // Ajustando para o tamanho correto
       allowNull: false,
       unique: true,
     },
-    CaminhoImgLoja: {
+    CaminhoImgEmpresa: {
       type: DataTypes.STRING(120),
       allowNull: true,
     }
   },
   {
     sequelize,
-    modelName: "Loja",
-    tableName: "Lojas",
+    modelName: "Empresas",
+    tableName: "Empresas",
   }
 );
 
