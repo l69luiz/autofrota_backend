@@ -111,6 +111,7 @@ import {
 } from '../controllers/tipoManutencaoController'; // Importando as funções do tipo de manutenção
 
 import { authMiddleware, checkPermission } from '../middlewares/authMiddleware';
+import { createContaBancaria, deleteContaBancaria, getContaBancariaById, getContasBancariasFilter, updateContaBancaria } from '../controllers/contasBancariasController';
 
 const router = express.Router();
 
@@ -135,6 +136,13 @@ router.get('/veiculos/placa/:Placa_Veiculo', authMiddleware, checkPermission('Ve
 router.get('/veiculos/:idVeiculo', authMiddleware, checkPermission('Veiculo', 'ler'), getVeiculoById); // Verificando permissão 'ler' para a tabela 'Veiculos'
 router.put('/veiculos/:idVeiculo', authMiddleware, checkPermission('Veiculo', 'atualizar'), updateVeiculo); // Verificando permissão 'atualizar' para a tabela 'Veiculos'
 router.delete('/veiculos/:idVeiculo', authMiddleware, checkPermission('Veiculo', 'deletar'), deleteVeiculo); // Verificando permissão 'deletar' para a tabela 'Veiculos'
+
+// Rotas de Contas Bancárias
+router.get('/contasbancarias', authMiddleware, checkPermission('ContasBancarias', 'ler'), getContasBancariasFilter); // Verificando permissão 'ler' para a tabela 'Veiculos'
+router.post('/contasbancarias', authMiddleware, checkPermission('ContasBancarias', 'criar'), createContaBancaria); // Verificando permissão 'criar' para a tabela 'Veiculos'
+router.get('/contasbancarias/:idContaBancaria', authMiddleware, checkPermission('ContasBancarias', 'ler'), getContaBancariaById); // Verificando permissão 'ler' para a tabela 'Veiculos'
+router.put('/contasbancarias/:idContaBancaria', authMiddleware, checkPermission('ContasBancarias', 'atualizar'), updateContaBancaria); // Verificando permissão 'atualizar' para a tabela 'Veiculos'
+router.delete('/contasbancarias/:idContaBancaria', authMiddleware, checkPermission('ContasBancarias', 'deletar'), deleteContaBancaria); // Verificando permissão 'deletar' para a tabela 'Veiculos'
 
 // // Rotas de clientes
 // //const urlRelativa = `/pessoas?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nomeCompleto_like=${filter}`;

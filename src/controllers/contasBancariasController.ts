@@ -14,7 +14,7 @@ interface CustomRequest extends Request {
 
 // Função para buscar contas bancárias da empresa do usuário com filtros e paginação
 export const getContasBancariasFilter = [
-  checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
+  //checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       // Pega o ID da empresa do usuário autenticado
@@ -66,7 +66,7 @@ export const getContasBancariasFilter = [
 
 // Função para buscar todas as contas bancárias da empresa do usuário
 export const getContasBancarias = [
-  checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
+  //checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
@@ -129,14 +129,13 @@ export const createContaBancaria = [
 
 // Função para excluir uma conta bancária da empresa do usuário
 export const deleteContaBancaria = [
-  checkPermission('ContaBancaria', 'deletar'), // Verifica permissão de deletar
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const { idContasBancarias } = req.params;
+      const { idContaBancaria } = req.params;
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
+        where: { idContaBancaria, Empresas_idEmpresa: idEmpresa },
       });
 
       if (!contaBancaria) {
@@ -156,10 +155,10 @@ export const deleteContaBancaria = [
 
 // Função para atualizar os dados de uma conta bancária na empresa do usuário
 export const updateContaBancaria = [
-  checkPermission('ContaBancaria', 'atualizar'), // Verifica permissão de atualização
+  //checkPermission('ContaBancaria', 'atualizar'), // Verifica permissão de atualização
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const { idContasBancarias } = req.params;
+      const { idContaBancaria } = req.params;
       const {
         NumeroBanco,
         NumeroConta,
@@ -177,7 +176,7 @@ export const updateContaBancaria = [
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
+        where: { idContaBancaria, Empresas_idEmpresa: idEmpresa },
       });
 
       if (!contaBancaria) {
@@ -210,15 +209,17 @@ export const updateContaBancaria = [
 
 // Função para buscar uma conta bancária por ID na empresa do usuário
 export const getContaBancariaById = [
-  checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
+  //checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const { idContasBancarias } = req.params;
+      const { idContaBancaria } = req.params;
+      console.log("Id conta: ",idContaBancaria);
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
-
+      console.log("Id Empresa: ",idEmpresa);
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
-      });
+        where: { idContaBancaria, Empresas_idEmpresa: idEmpresa },
+            });
+      console.log("Dados da conta: ",contaBancaria);
 
       if (!contaBancaria) {
         res.status(404).json({ message: 'Conta bancária não encontrada nesta empresa' });
@@ -227,6 +228,7 @@ export const getContaBancariaById = [
 
       res.status(200).json(contaBancaria);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: 'Erro ao buscar conta bancária pelo ID' });
     }
   },
