@@ -140,9 +140,9 @@ router.delete('/veiculos/:idVeiculo', authMiddleware, checkPermission('Veiculo',
 // Rotas de Contas Bancárias
 router.get('/contasbancarias', authMiddleware, checkPermission('ContasBancarias', 'ler'), getContasBancariasFilter); // Verificando permissão 'ler' para a tabela 'Veiculos'
 router.post('/contasbancarias', authMiddleware, checkPermission('ContasBancarias', 'criar'), createContaBancaria); // Verificando permissão 'criar' para a tabela 'Veiculos'
-router.get('/contasbancarias/:idContaBancaria', authMiddleware, checkPermission('ContasBancarias', 'ler'), getContaBancariaById); // Verificando permissão 'ler' para a tabela 'Veiculos'
-router.put('/contasbancarias/:idContaBancaria', authMiddleware, checkPermission('ContasBancarias', 'atualizar'), updateContaBancaria); // Verificando permissão 'atualizar' para a tabela 'Veiculos'
-router.delete('/contasbancarias/:idContaBancaria', authMiddleware, checkPermission('ContasBancarias', 'deletar'), deleteContaBancaria); // Verificando permissão 'deletar' para a tabela 'Veiculos'
+router.get('/contasbancarias/:idContasBancarias', authMiddleware, checkPermission('ContasBancarias', 'ler'), getContaBancariaById); // Verificando permissão 'ler' para a tabela 'Veiculos'
+router.put('/contasbancarias/:idContasBancarias', authMiddleware, checkPermission('ContasBancarias', 'atualizar'), updateContaBancaria); // Verificando permissão 'atualizar' para a tabela 'Veiculos'
+router.delete('/contasbancarias/:idContasBancarias', authMiddleware, checkPermission('ContasBancarias', 'deletar'), deleteContaBancaria); // Verificando permissão 'deletar' para a tabela 'Veiculos'
 
 // // Rotas de clientes
 // //const urlRelativa = `/pessoas?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nomeCompleto_like=${filter}`;

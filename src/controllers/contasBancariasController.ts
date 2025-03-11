@@ -212,12 +212,12 @@ export const getContaBancariaById = [
   //checkPermission('ContaBancaria', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const { idContaBancaria } = req.params;
-      console.log("Id conta: ",idContaBancaria);
+      const { idContasBancarias } = req.params;
+      console.log("Id conta: ",idContasBancarias);
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
       console.log("Id Empresa: ",idEmpresa);
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContaBancaria, Empresas_idEmpresa: idEmpresa },
+        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
             });
       console.log("Dados da conta: ",contaBancaria);
 
