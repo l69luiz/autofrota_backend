@@ -21,7 +21,7 @@ export const getContasBancariasFilter = [
       const idEmpresa = req.user?.idempresaToken;
 
       // Pega os parâmetros da URL (para filtros e paginação)
-      const { _page, _limit, nome_like } = req.query;
+      const { _page, _limit, nomeBanco_like } = req.query;
 
       // Converte _page e _limit para inteiros e define valores padrão caso sejam inválidos
       const page = !isNaN(parseInt(_page as string)) ? parseInt(_page as string, 10) : 1;
@@ -31,9 +31,9 @@ export const getContasBancariasFilter = [
       // Constrói a condição de filtro para o nome, se fornecido
       const whereCondition = {
         Empresas_idEmpresa: idEmpresa, // Filtro pela empresa do usuário logado
-        ...(nome_like && {
+        ...(nomeBanco_like && {
           NomeBanco: {
-            [Op.like]: `%${nome_like}%`, // Filtro por nome do banco (case-insensitive)
+            [Op.like]: `%${nomeBanco_like}%`, // Filtro por nome do banco (case-insensitive)
           },
         }),
       };
@@ -131,11 +131,11 @@ export const createContaBancaria = [
 export const deleteContaBancaria = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const { idContaBancaria } = req.params;
+      const { idContasBancarias } = req.params;
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContaBancaria, Empresas_idEmpresa: idEmpresa },
+        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
       });
 
       if (!contaBancaria) {
@@ -158,7 +158,7 @@ export const updateContaBancaria = [
   //checkPermission('ContaBancaria', 'atualizar'), // Verifica permissão de atualização
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
-      const { idContaBancaria } = req.params;
+      const { idContasBancarias } = req.params;
       const {
         NumeroBanco,
         NumeroConta,
@@ -176,7 +176,7 @@ export const updateContaBancaria = [
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
 
       const contaBancaria = await ContaBancaria.findOne({
-        where: { idContaBancaria, Empresas_idEmpresa: idEmpresa },
+        where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
       });
 
       if (!contaBancaria) {

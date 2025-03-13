@@ -14,7 +14,7 @@ import {
 } from '../controllers/usuariosController';
 
 import { 
-  getEmpresas, 
+  getEmpresasFilter, 
   createEmpresa, 
   updateEmpresa, 
   deleteEmpresa, 
@@ -218,7 +218,7 @@ router.put('/vistorias/:idVistoria', authMiddleware, checkPermission('Vistoria',
 router.delete('/vistorias/:idVistoria', authMiddleware, checkPermission('Vistoria', 'deletar'), deleteVistoria); // Verificando permissão 'deletar' para a tabela 'Vistorias'
 
 // Rotas de empresas
-router.get('/empresas', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresas); // Verificando permissão 'ler' para a tabela 'Empresas'
+router.get('/empresas', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresasFilter); // Verificando permissão 'ler' para a tabela 'Empresas'
 router.post('/empresas', authMiddleware, checkPermission('Empresa', 'criar'), createEmpresa); // Verificando permissão 'criar' para a tabela 'Empresas'
 router.get('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresaById); // Verificando permissão 'ler' para a tabela 'Empresas'
 router.put('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'atualizar'), updateEmpresa); // Verificando permissão 'atualizar' para a tabela 'Empresas'

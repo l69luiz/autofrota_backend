@@ -6,7 +6,7 @@ import { sequelize } from "../config/database";
 export class Empresa extends Model {
   public idEmpresa!: number;
   public Nome_Empresa!: string;
-  public NomeFantasia_Empresa!: string;
+  public NomeFantasia_Empresa!: string; 
   public Endereco_Empresa!: string;
   public Telefone_Empresa!: string | null;
   public Email_Empresa!: string | null;
