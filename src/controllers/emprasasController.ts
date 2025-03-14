@@ -17,7 +17,7 @@ export const getEmpresasFilter = async (req: CustomRequest, res: Response): Prom
   try {
     // Pega o ID da empresa do usuário autenticado
     const idEmpresa = req.user?.idempresaToken;
-    console.log("IdEmpresa: ", idEmpresa);
+    console.log("IdEmpresaX: ", idEmpresa);
 
     // Pega os parâmetros da URL (para filtros e paginação)
     const { _page, _limit, nomeEmpresa_like } = req.query;
@@ -104,6 +104,7 @@ export const createEmpresa = [
 
       res.status(201).json(empresa);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: 'Erro ao criar registro' });
     }
   },
