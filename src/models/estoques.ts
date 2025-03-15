@@ -62,7 +62,7 @@ Estoque.init(
   },
   {
     sequelize,
-    modelName: "Estoque",
+    modelName: "Estoques",
     tableName: "Estoques", // Nome da tabela no banco de dados
     timestamps: true,
   }

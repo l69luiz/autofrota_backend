@@ -15,7 +15,7 @@ interface CustomRequest extends Request {
 
 // Função para buscar estoques da empresa do usuário com filtros e paginação
 export const getEstoquesFilter = [
-  checkPermission('Estoque', 'ler'), // Verifica permissão de leitura
+  //checkPermission('Estoques', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       // Pega o ID da empresa do usuário autenticado
@@ -166,7 +166,7 @@ export const updateEstoque = [
 
 // Função para buscar estoque por ID na empresa do usuário
 export const getEstoqueById = [
-  checkPermission('Estoque', 'ler'), // Verifica permissão de leitura
+  //checkPermission('Estoque', 'ler'), // Verifica permissão de leitura
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idEstoque } = req.params;
