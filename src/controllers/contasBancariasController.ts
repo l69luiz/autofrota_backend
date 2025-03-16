@@ -213,13 +213,10 @@ export const getContaBancariaById = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const { idContasBancarias } = req.params;
-      console.log("Id conta: ",idContasBancarias);
       const idEmpresa = req.user?.idempresaToken; // ID da empresa do usuário logado
-      console.log("Id Empresa: ",idEmpresa);
       const contaBancaria = await ContaBancaria.findOne({
         where: { idContasBancarias, Empresas_idEmpresa: idEmpresa },
             });
-      console.log("Dados da conta: ",contaBancaria);
 
       if (!contaBancaria) {
         res.status(404).json({ message: 'Conta bancária não encontrada nesta empresa' });
@@ -228,7 +225,6 @@ export const getContaBancariaById = [
 
       res.status(200).json(contaBancaria);
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: 'Erro ao buscar conta bancária pelo ID' });
     }
   },
