@@ -236,8 +236,7 @@ export const getEmpresaByIdToken = [
   async (req: CustomRequest, res: Response): Promise<void> => {
     try {
       const idEmpresa = req.user?.idempresaToken;
-      console.log("Id:   ddd",idEmpresa);
-      //const { idEmpresa } = idempresaToken ;
+       //const { idEmpresa } = idempresaToken ;
       const empresa = await Empresa.findOne({ where: { idEmpresa } });
       if (!empresa) {
         res.status(404).json({ message: "Empresa não encontrada com este ID." });
