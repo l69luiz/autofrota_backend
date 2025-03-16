@@ -219,12 +219,12 @@ router.put('/vistorias/:idVistoria', authMiddleware, checkPermission('Vistoria',
 router.delete('/vistorias/:idVistoria', authMiddleware, checkPermission('Vistoria', 'deletar'), deleteVistoria); // Verificando permissão 'deletar' para a tabela 'Vistorias'
 
 // Rotas de empresas
-router.get('/empresas/filter', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresasFilter); // Verificando permissão 'ler' para a tabela 'Empresas'
-router.get('/empresa/detalhe', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresaByIdToken); // Verificando permissão 'ler' para a tabela 'Empresas'
-router.post('/empresas', authMiddleware, checkPermission('Empresa', 'criar'), createEmpresa); // Verificando permissão 'criar' para a tabela 'Empresas'
-router.get('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'ler'), getEmpresaById); // Verificando permissão 'ler' para a tabela 'Empresas'
-router.put('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'atualizar'), updateEmpresa); // Verificando permissão 'atualizar' para a tabela 'Empresas'
-router.delete('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresa', 'deletar'), deleteEmpresa); // Verificando permissão 'deletar' para a tabela 'Empresas'
+router.get('/empresas/filter', authMiddleware, checkPermission('Empresas', 'ler'), getEmpresasFilter); // Verificando permissão 'ler' para a tabela 'Empresas'
+router.get('/empresa/detalhe', authMiddleware, checkPermission('Empresas', 'ler'), getEmpresaByIdToken); // Verificando permissão 'ler' para a tabela 'Empresas'
+router.post('/empresas', authMiddleware, checkPermission('Empresas', 'criar'), createEmpresa); // Verificando permissão 'criar' para a tabela 'Empresas'
+router.get('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresas', 'ler'), getEmpresaById); // Verificando permissão 'ler' para a tabela 'Empresas'
+router.put('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresas', 'atualizar'), updateEmpresa); // Verificando permissão 'atualizar' para a tabela 'Empresas'
+router.delete('/empresas/:idEmpresa', authMiddleware, checkPermission('Empresas', 'deletar'), deleteEmpresa); // Verificando permissão 'deletar' para a tabela 'Empresas'
 
 // Rotas de tipo de manutenção
 router.get('/tipoManutencao', authMiddleware, checkPermission('TipoManutencao', 'ler'), getTipoManutencao); // Verificando permissão 'ler' para a tabela 'TipoManutencao'
