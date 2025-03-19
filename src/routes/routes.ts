@@ -90,7 +90,7 @@ import {
   getTestDriveById 
 } from '../controllers/testDrivesController'; // Importando as funções de test drives
 import { 
-  getVendas, 
+  getVendasFilter, 
   createVenda, 
   updateVenda, 
   deleteVenda, 
@@ -205,11 +205,11 @@ router.put('/testdrives/:idTestDrive', authMiddleware, checkPermission('TestDriv
 router.delete('/testdrives/:idTestDrive', authMiddleware, checkPermission('TestDrive', 'deletar'), deleteTestDrive); // Verificando permissão 'deletar' para a tabela 'TestDrives'
 
 // Rotas de vendas
-router.get('/vendas', authMiddleware, checkPermission('Venda', 'ler'), getVendas); // Verificando permissão 'ler' para a tabela 'Vendas'
-router.post('/vendas', authMiddleware, checkPermission('Venda', 'criar'), createVenda); // Verificando permissão 'criar' para a tabela 'Vendas'
-router.get('/vendas/:idVenda', authMiddleware, checkPermission('Venda', 'ler'), getVendaById); // Verificando permissão 'ler' para a tabela 'Vendas'
-router.put('/vendas/:idVenda', authMiddleware, checkPermission('Venda', 'atualizar'), updateVenda); // Verificando permissão 'atualizar' para a tabela 'Vendas'
-router.delete('/vendas/:idVenda', authMiddleware, checkPermission('Venda', 'deletar'), deleteVenda); // Verificando permissão 'deletar' para a tabela 'Vendas'
+router.get('/vendas', authMiddleware, checkPermission('Vendas', 'ler'), getVendasFilter); // Verificando permissão 'ler' para a tabela 'Vendas'
+router.post('/vendas', authMiddleware, checkPermission('Vendas', 'criar'), createVenda); // Verificando permissão 'criar' para a tabela 'Vendas'
+router.get('/vendas/:idVenda', authMiddleware, checkPermission('Vendas', 'ler'), getVendaById); // Verificando permissão 'ler' para a tabela 'Vendas'
+router.put('/vendas/:idVenda', authMiddleware, checkPermission('Vendas', 'atualizar'), updateVenda); // Verificando permissão 'atualizar' para a tabela 'Vendas'
+router.delete('/vendas/:idVenda', authMiddleware, checkPermission('Vendas', 'deletar'), deleteVenda); // Verificando permissão 'deletar' para a tabela 'Vendas'
 
 // Rotas de vistorias
 router.get('/vistorias', authMiddleware, checkPermission('Vistoria', 'ler'), getVistorias); // Verificando permissão 'ler' para a tabela 'Vistorias'
