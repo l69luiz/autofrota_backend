@@ -20,25 +20,29 @@ export const getVendasFilter = async (req: CustomRequest, res: Response): Promis
     // Pega o ID da empresa do usuário autenticado
     const idEmpresa = req.user?.idempresaToken;
 
+    if (!idEmpresa) {
+      //return res.status(403).json({ message: 'Usuário não pertence a uma empresa válida.' });
+    }
+
     // Pega os parâmetros da URL (para filtros e paginação)
-    const { _page, _limit, data_like, cliente_like } = req.query;
+    const { _page, _limit, cliente_like, dataInicio, dataFim } = req.query;
 
     // Converte _page e _limit para inteiros e define valores padrão caso sejam inválidos
     const page = !isNaN(parseInt(_page as string)) ? parseInt(_page as string, 10) : 1;
     const limit = !isNaN(parseInt(_limit as string)) ? parseInt(_limit as string, 10) : 10;
     const offset = (page - 1) * limit;
 
-    // Constrói a condição de filtro para a data e cliente, se fornecido
-    const whereCondition = {
-      Empresas_idEmpresa: idEmpresa, // Filtro pela empresa do usuário logado
-      ...(data_like && {
-        Data_Venda: {
-          [Op.like]: `%${data_like}%`,
-        },
-      }),
+    // Constrói a condição de filtro para a data, cliente, e empresa
+    const whereCondition: any = {
+      '$usuario.Empresas_idEmpresa$': idEmpresa, // Filtro pela empresa do usuário logado
       ...(cliente_like && {
         '$cliente.Nome$': {
           [Op.like]: `%${cliente_like}%`,
+        },
+      }),
+      ...(dataInicio && dataFim && {
+        Data_Venda: {
+          [Op.between]: [new Date(dataInicio as string), new Date(dataFim as string)],
         },
       }),
     };
@@ -48,7 +52,7 @@ export const getVendasFilter = async (req: CustomRequest, res: Response): Promis
       where: whereCondition,
       include: [
         { model: Cliente, as: 'cliente' },
-        { model: Usuario, as: 'usuario' },
+        { model: Usuario, as: 'usuario', where: { Empresas_idEmpresa: idEmpresa } }, // Garante que o usuário pertence à empresa
         { model: Veiculo, as: 'veiculo' },
       ],
       limit: limit,
@@ -68,8 +72,9 @@ export const getVendasFilter = async (req: CustomRequest, res: Response): Promis
       });
     }
   } catch (error) {
+    console.error(error);
+    console.log(error);
     res.status(500).json({ message: 'Erro ao buscar vendas' });
-    //console.log(error);
   }
 };
 
